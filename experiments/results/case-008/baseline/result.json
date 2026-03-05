@@ -1,0 +1,15 @@
+{
+  "case_id": "case-008",
+  "condition": "baseline",
+  "files_created": [
+    "event-bus.js",
+    "order-service.js",
+    "inventory-service.js",
+    "payment-service.js",
+    "notification-service.js",
+    "saga-orchestrator.js",
+    "test.js"
+  ],
+  "total_lines": 856,
+  "approach": "단일 Node.js 프로세스에서 EventBus(pub/sub + 와일드카드) 기반 마이크로서비스 시뮬레이션. 4개 서비스(Order, Inventory, Payment, Notification)가 이벤트로 통신하며, SAGA Orchestrator가 분산 트랜잭션 보상 패턴을 관리. 낙관적 잠금으로 재고 동시성 제어, 멱등성 키로 결제 중복 방지, correlation ID로 전체 이벤트 체인 추적. 5개 시나리오(정상 플로우, 재고 부족 보상, 결제 실패 보상, 동시 주문 경쟁, 타임아웃) 모두 통과."
+}

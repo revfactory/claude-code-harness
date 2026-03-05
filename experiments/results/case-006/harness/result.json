@@ -1,0 +1,16 @@
+{
+  "case_id": "case-006",
+  "condition": "harness",
+  "files_created": [
+    "comparison.md",
+    "recommendation-guide.md",
+    "examples/redux-toolkit/TodoApp.tsx",
+    "examples/zustand/TodoApp.tsx",
+    "examples/jotai/TodoApp.tsx",
+    "examples/recoil/TodoApp.tsx",
+    "examples/valtio/TodoApp.tsx"
+  ],
+  "total_lines": 992,
+  "agents_used": 0,
+  "approach": "CLAUDE.md와 tech-comparison.md 스킬의 비교 프레임워크(9개 항목, A-F 등급, 예제 코드 통일 규칙, Recoil 아카이브 명시)를 따라 5개 React 상태 관리 라이브러리를 체계적으로 비교 분석. 종합 비교 매트릭스, 개별 라이브러리 분석, 동일 기능(카운터+TODO CRUD+필터) TypeScript 예제 코드, 프로젝트 규모/유형/팀 상황별 추천 가이드를 작성."
+}

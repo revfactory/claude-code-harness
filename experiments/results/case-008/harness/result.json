@@ -1,0 +1,21 @@
+{
+  "case_id": "case-008",
+  "condition": "harness",
+  "files_created": [
+    "src/event-bus.js",
+    "src/saga-orchestrator.js",
+    "src/services/order-service.js",
+    "src/services/inventory-service.js",
+    "src/services/payment-service.js",
+    "src/services/notification-service.js",
+    "src/utils/correlation-id.js",
+    "src/utils/logger.js",
+    "tests/event-bus.test.js",
+    "tests/saga.test.js",
+    "tests/integration.test.js",
+    "package.json"
+  ],
+  "total_lines": 1128,
+  "agents_used": 0,
+  "approach": "CLAUDE.md 및 microservice-patterns.md 스킬 지침에 따라 EventBus(pub/sub, 와일드카드, 에러격리), SAGA Orchestrator(타임아웃, 역순 보상), 4개 서비스(OrderService, InventoryService-낙관적잠금, PaymentService-멱등성, NotificationService), correlation ID 추적을 구현. 서비스 간 직접 참조 없이 이벤트로만 통신. 17개 테스트(단위 7 + SAGA 5 + 통합 5시나리오) 모두 통과."
+}

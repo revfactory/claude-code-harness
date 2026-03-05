@@ -1,0 +1,19 @@
+{
+  "case_id": "case-010",
+  "condition": "harness",
+  "files_created": [
+    "src/char-id.js",
+    "src/vector-clock.js",
+    "src/crdt-document.js",
+    "src/site.js",
+    "src/simulator.js",
+    "tests/basic.test.js",
+    "tests/sync.test.js",
+    "tests/conflict.test.js",
+    "tests/convergence.test.js",
+    "tests/idempotency.test.js"
+  ],
+  "total_lines": 1317,
+  "agents_used": 0,
+  "approach": "RGA(Replicated Growable Array) 기반 CRDT 실시간 협업 텍스트 에디터 엔진. CharId(siteId+Lamport clock) 고유 식별, 이중 연결 리스트+해시맵 자료구조, tombstone 삭제, _integrateInsert 결정론적 충돌 해결(id.compareTo), 인과성 버퍼(pendingInserts)로 순서 무관 적용, Site/Simulator 패턴으로 다중 사이트 동기화. 충돌 시나리오 A(동시 삽입)/B(삽입vs삭제)/C(3사이트 복합) 및 수렴성 퍼즈 테스트, 멱등성, 인과성 검증 완료."
+}

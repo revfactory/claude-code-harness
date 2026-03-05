@@ -1,0 +1,16 @@
+{
+  "case_id": "case-001",
+  "condition": "harness",
+  "files_created": [
+    "package.json",
+    "src/models/todoStore.js",
+    "src/middleware/validate.js",
+    "src/middleware/errorHandler.js",
+    "src/controllers/todoController.js",
+    "src/routes/todoRoutes.js",
+    "src/app.js"
+  ],
+  "total_lines": 181,
+  "agents_used": 0,
+  "approach": "CLAUDE.md 아키텍처(MVC 패턴), express-api-design 스킬 가이드, create-api 커맨드 절차를 준수하여 구현. 클래스 기반 싱글턴 스토어, 유효성 검사 미들웨어 분리, 글로벌 에러 핸들러, 불변성 반환(스프레드 복사본) 패턴 적용."
+}

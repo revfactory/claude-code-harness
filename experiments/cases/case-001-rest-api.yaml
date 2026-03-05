@@ -1,0 +1,22 @@
+id: case-001
+category: code-generation
+title: "REST API 서버 구현"
+difficulty: medium
+description: |
+  Node.js와 Express로 TODO 관리 REST API를 구현하세요.
+  요구사항:
+  - CRUD 엔드포인트: GET /todos, GET /todos/:id, POST /todos, PUT /todos/:id, DELETE /todos/:id
+  - 메모리 기반 저장소 (배열)
+  - 각 TODO: { id, title, completed, createdAt }
+  - 입력 유효성 검사 (title 필수, 빈 문자열 불가)
+  - 적절한 HTTP 상태 코드 반환 (200, 201, 400, 404)
+  - 에러 핸들링 미들웨어
+expected_outputs:
+  - "서버 엔트리포인트"
+  - "라우트 정의"
+  - "에러 핸들러"
+evaluation_criteria:
+  completeness: "모든 CRUD 엔드포인트 + 유효성 검사 + 에러 핸들링"
+  quality: "라우터/컨트롤러 분리, 명확한 변수명"
+  correctness: "올바른 HTTP 상태 코드, 정확한 CRUD 로직"
+  efficiency: "최소한의 코드로 요구사항 충족"

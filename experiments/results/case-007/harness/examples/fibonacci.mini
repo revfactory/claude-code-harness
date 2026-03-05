@@ -1,0 +1,14 @@
+// Fibonacci numbers
+fn fib(n) {
+  if (n <= 1) {
+    return n;
+  }
+  return fib(n - 1) + fib(n - 2);
+}
+
+// Print first 10 fibonacci numbers
+let i = 0;
+while (i < 10) {
+  print("fib(" + str(i) + ") =", fib(i));
+  i = i + 1;
+}

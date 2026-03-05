@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js Tips and Tricks</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="site-title">Blog</a>
+    </nav>
+  </header>
+  <main>
+    <article class="post">
+  <header class="post-header">
+    <h1>Node.js Tips and Tricks</h1>
+    <div class="post-meta">
+      <time datetime="2026-03-03">2026-03-03</time>
+      <span class="author">by Robin</span>
+    </div>
+    <div class="tags"><a href="/tags/nodejs.html" class="tag">nodejs</a> <a href="/tags/javascript.html" class="tag">javascript</a> <a href="/tags/tutorial.html" class="tag">tutorial</a></div>
+  </header>
+  <div class="post-content">
+    
+<h1>Node.js Tips and Tricks</h1>
+
+<p>Here are some useful tips for working with Node.js effectively.</p>
+
+<h2>1. Use Path Module Correctly</h2>
+
+<p>Always use <code>path.join()</code> instead of string concatenation:</p>
+
+<pre><code class="language-javascript"><span class="hl-keyword">const</span> path = require(<span <span class="hl-keyword">class</span>="hl-string">'path'</span>);
+
+<span <span class="hl-keyword">class</span>="hl-comment">// Good</span>
+<span class="hl-keyword">const</span> filePath = path.join(__dirname, <span <span class="hl-keyword">class</span>="hl-string">'data'</span>, <span <span class="hl-keyword">class</span>="hl-string">'config.json'</span>);
+
+<span <span class="hl-keyword">class</span>="hl-comment">// Bad</span>
+<span class="hl-keyword">const</span> badPath = __dirname + <span <span class="hl-keyword">class</span>="hl-string">'/data/config.json'</span>;</code></pre>
+
+<h2>2. Read Files Efficiently</h2>
+
+<p>For smaller files, <code>readFileSync</code> is fine. For larger files, use streams:</p>
+
+<pre><code class="language-javascript"><span class="hl-keyword">const</span> fs = require(<span <span class="hl-keyword">class</span>="hl-string">'fs'</span>);
+
+<span <span class="hl-keyword">class</span>="hl-comment">// Stream approach <span class="hl-keyword">for</span> large files</span>
+<span class="hl-keyword">const</span> stream = fs.createReadStream(<span <span class="hl-keyword">class</span>="hl-string">'large-file.txt'</span>, {
+  encoding: <span <span class="hl-keyword">class</span>="hl-string">'utf-<span <span class="hl-keyword">class</span>="hl-number">8</span>'</span>,
+  highWaterMark: <span <span class="hl-keyword">class</span>="hl-number">1024</span>
+});
+
+stream.on(<span <span class="hl-keyword">class</span>="hl-string">'data'</span>, (chunk) =&gt; {
+  <span <span class="hl-keyword">class</span>="hl-comment">// process chunk</span>
+});</code></pre>
+
+<h2>3. Error Handling</h2>
+
+<p>Always handle errors properly in async code:</p>
+
+<pre><code class="language-javascript"><span class="hl-keyword">async</span> <span class="hl-keyword">function</span> loadData() {
+  <span class="hl-keyword">try</span> {
+    <span class="hl-keyword">const</span> data = <span class="hl-keyword">await</span> fs.promises.readFile(<span <span class="hl-keyword">class</span>="hl-string">'data.json'</span>, <span <span class="hl-keyword">class</span>="hl-string">'utf-<span <span class="hl-keyword">class</span>="hl-number">8</span>'</span>);
+    <span class="hl-keyword">return</span> JSON.parse(data);
+  } <span class="hl-keyword">catch</span> (err) {
+    console.error(<span <span class="hl-keyword">class</span>="hl-string">'Failed to load data:'</span>, err.message);
+    <span class="hl-keyword">return</span> <span class="hl-keyword">null</span>;
+  }
+}</code></pre>
+
+These patterns will help you write more robust Node.js applications.
+
+  </div>
+  <footer class="post-footer">
+    <a href="/">&larr; Back to all posts</a>
+  </footer>
+</article>
+
+  </main>
+  <footer>
+    <p>Built with Markdown Blog Generator</p>
+  </footer>
+</body>
+</html>

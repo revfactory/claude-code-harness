@@ -1,0 +1,39 @@
+id: case-004
+category: documentation
+title: "오픈소스 라이브러리 README 작성"
+difficulty: easy
+description: |
+  아래 유틸리티 라이브러리에 대한 완전한 README.md를 작성하세요.
+
+  라이브러리 정보:
+  - 이름: datekit
+  - 설명: 경량 날짜 유틸리티 라이브러리 (JavaScript)
+  - 주요 기능:
+    - format(date, pattern): 날짜를 지정된 패턴으로 포맷팅
+    - parse(str, pattern): 문자열을 Date 객체로 파싱
+    - diff(date1, date2, unit): 두 날짜의 차이 계산
+    - add(date, amount, unit): 날짜에 시간 추가
+    - isValid(date): 유효한 날짜인지 검증
+    - relative(date): 상대적 시간 표현 ("3일 전")
+  - 설치: npm install datekit
+  - 의존성 없음, < 3KB gzipped
+  - TypeScript 지원
+  - 브라우저 & Node.js 호환
+
+  README에 포함할 내용:
+  1. 프로젝트 배지 (npm version, bundle size, license)
+  2. 핵심 특징 요약
+  3. 설치 방법
+  4. Quick Start 예제
+  5. 전체 API 문서 (각 함수별 설명, 파라미터, 반환값, 예제)
+  6. TypeScript 사용 예시
+  7. 브라우저 사용법 (CDN)
+  8. 기여 가이드
+  9. 라이선스
+expected_outputs:
+  - "README.md"
+evaluation_criteria:
+  completeness: "9개 섹션 모두 포함"
+  quality: "명확한 구조, 실용적인 예제, 일관된 톤"
+  correctness: "API 설명이 정확한가"
+  efficiency: "간결하면서도 충분한 정보"

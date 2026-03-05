@@ -1,0 +1,13 @@
+{
+  "case_id": "case-003",
+  "condition": "baseline",
+  "files_created": [
+    "constants.js",
+    "pricingStrategies.js",
+    "calculator.js",
+    "calculator.test.js",
+    "original.js"
+  ],
+  "total_lines": 462,
+  "approach": "스파게티 코드를 SRP 원칙에 따라 3개 모듈(constants, pricingStrategies, calculator)로 분리. 매직 넘버를 상수로 추출하고, 고객 유형별 가격 산정에 전략 패턴을 적용. 단축 변수명을 의미 있는 이름(grandTotal, discountPercent, pricingStrategy 등)으로 변경. 원본 코드를 보존하여 12개 시나리오에서 동일 입출력을 검증하고, 분리된 개별 함수에 대한 단위 테스트 5종을 포함. 모든 17개 테스트 통과."
+}

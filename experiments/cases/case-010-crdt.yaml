@@ -1,0 +1,172 @@
+id: case-010
+category: complex-system
+title: "실시간 협업 CRDT 텍스트 에디터 엔진"
+difficulty: expert
+description: |
+  여러 사용자가 동시에 문서를 편집할 수 있는 CRDT(Conflict-free Replicated Data Type) 기반
+  실시간 협업 텍스트 에디터 엔진을 구현하세요.
+
+  ## CRDT 알고리즘: RGA (Replicated Growable Array)
+
+  각 문자에 고유 ID를 부여하여 삽입/삭제의 충돌을 해결합니다.
+
+  ### 문자 ID 구조
+  ```javascript
+  {
+    siteId: "user1",     // 사용자 식별자
+    clock: 5,            // Lamport 논리 시계
+    // 전역 고유: siteId + clock 조합
+  }
+  ```
+
+  ### 연산
+  ```javascript
+  // 삽입: position 다음에 문자 삽입
+  insert(charId, parentId, char)
+
+  // 삭제: tombstone 마킹 (실제 삭제하지 않음)
+  delete(charId)
+  ```
+
+  ## 구현 요구사항
+
+  ### 1. CRDT Document
+  ```javascript
+  class CRDTDocument {
+    // 로컬 삽입 (사용자가 position에 문자 입력)
+    localInsert(position, char)    // → Operation
+
+    // 로컬 삭제 (사용자가 position의 문자 삭제)
+    localDelete(position)          // → Operation
+
+    // 원격 연산 적용 (다른 사용자의 연산 수신)
+    applyRemote(operation)
+
+    // 현재 문서 텍스트 반환
+    getText()
+
+    // 현재 문서 길이
+    getLength()
+  }
+  ```
+
+  ### 2. Site (사용자 노드)
+  ```javascript
+  class Site {
+    constructor(siteId)
+
+    // 로컬 편집
+    insert(position, char)
+    delete(position)
+
+    // 다른 Site와 동기화
+    sync(otherSite)
+
+    // 미전송 연산 큐
+    getPendingOps()
+
+    // 문서 내용
+    getText()
+  }
+  ```
+
+  ### 3. 동기화 시뮬레이터
+  ```javascript
+  class CollaborationSimulator {
+    // 사이트 추가
+    addSite(siteId)
+
+    // 특정 사이트에서 편집
+    editAt(siteId, operations)
+
+    // 모든 사이트 동기화 (결과적 일관성 검증)
+    syncAll()
+
+    // 모든 사이트의 문서가 동일한지 검증
+    verifyConvergence()
+  }
+  ```
+
+  ### 4. 핵심 속성 보장
+  - **수렴성 (Convergence)**: 모든 연산을 적용한 후 모든 사이트의 문서가 동일
+  - **의도 보존 (Intention Preservation)**: 삽입은 의도한 위치에 반영
+  - **인과성 (Causality)**: Lamport 시계로 연산 순서 보장
+  - **멱등성 (Idempotency)**: 동일 연산을 여러 번 적용해도 결과 동일
+
+  ### 5. 충돌 시나리오 (반드시 처리)
+
+  #### 시나리오 A: 동시 삽입 (같은 위치)
+  ```
+  초기: "AC"
+  User1: position 1에 'B' 삽입 → "ABC"
+  User2: position 1에 'X' 삽입 → "AXC"
+  동기화 후: "ABXC" 또는 "AXBC" (결정론적 순서로 일관)
+  ```
+
+  #### 시나리오 B: 삽입 vs 삭제 (같은 위치)
+  ```
+  초기: "ABC"
+  User1: position 1의 'B' 삭제 → "AC"
+  User2: position 1 뒤에 'X' 삽입 → "ABXC"
+  동기화 후: "AXC" (삭제된 B의 위치에 X가 삽입됨)
+  ```
+
+  #### 시나리오 C: 복수 사용자 동시 편집
+  ```
+  초기: "Hello"
+  User1: 끝에 " World" 추가
+  User2: "Hello" → "Hi"로 수정 (H 유지, ello 삭제, i 삽입)
+  User3: position 5에 "!" 삽입
+  동기화 후: 세 사용자 모두 동일한 문서
+  ```
+
+  ### 6. 테스트 요구사항
+  - 단일 사이트 기본 연산 (삽입, 삭제)
+  - 두 사이트 동기화 (비충돌)
+  - 두 사이트 동시 삽입 충돌 (시나리오 A)
+  - 삽입-삭제 충돌 (시나리오 B)
+  - 3+ 사이트 복합 시나리오 (시나리오 C)
+  - 수렴성 검증 (랜덤 연산 생성 → 동기화 → 일치 확인)
+  - 멱등성 검증 (동일 연산 중복 적용)
+  - 인과성 검증 (순서 뒤바뀜에도 결과 일관)
+
+  ## 검증 프로그램
+  ```javascript
+  const sim = new CollaborationSimulator();
+  sim.addSite('alice');
+  sim.addSite('bob');
+  sim.addSite('charlie');
+
+  // 초기 문서: Alice가 "Hello" 입력
+  sim.editAt('alice', [
+    { type: 'insert', position: 0, char: 'H' },
+    { type: 'insert', position: 1, char: 'e' },
+    { type: 'insert', position: 2, char: 'l' },
+    { type: 'insert', position: 3, char: 'l' },
+    { type: 'insert', position: 4, char: 'o' },
+  ]);
+  sim.syncAll();
+  // 모두 "Hello"
+
+  // 동시 편집
+  sim.editAt('alice', [{ type: 'insert', position: 5, char: '!' }]);
+  sim.editAt('bob', [{ type: 'insert', position: 5, char: '?' }]);
+  sim.editAt('charlie', [
+    { type: 'delete', position: 4 }, // 'o' 삭제
+    { type: 'insert', position: 4, char: 'a' },
+  ]);
+
+  sim.syncAll();
+  assert(sim.verifyConvergence()); // 세 사이트 모두 동일한 문서
+  ```
+expected_outputs:
+  - "CRDT Document 클래스"
+  - "Site 클래스"
+  - "CollaborationSimulator"
+  - "충돌 해결 로직"
+  - "포괄적 테스트"
+evaluation_criteria:
+  completeness: "3개 충돌 시나리오 + 수렴성/멱등성/인과성 검증"
+  quality: "CRDT 알고리즘 정확성, 코드 구조"
+  correctness: "모든 충돌 시나리오에서 수렴성 보장"
+  efficiency: "효율적인 문자 ID 관리, O(n) 이하 삽입"

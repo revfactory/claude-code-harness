@@ -1,0 +1,10 @@
+{
+  "case_id": "case-004",
+  "condition": "baseline",
+  "files_created": [
+    "README.md",
+    "result.json"
+  ],
+  "total_lines": 383,
+  "approach": "사전 가이드 없이 태스크 명세만으로 datekit 라이브러리 README.md를 작성. 9개 필수 섹션(배지, 핵심 특징, 설치, Quick Start, 전체 API 문서, TypeScript, 브라우저 CDN, 기여 가이드, 라이선스)을 모두 포함. 각 API 함수별로 파라미터 테이블, 반환값, 실행 가능한 코드 예제를 제공하고, TypeScript 타입 정의와 CDN 사용법(UMD/ESM)까지 기술."
+}

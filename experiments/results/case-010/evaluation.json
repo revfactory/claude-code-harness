@@ -1,0 +1,59 @@
+{
+  "case_id": "case-010",
+  "task": "CRDT 실시간 협업 텍스트 에디터 (RGA 알고리즘)",
+  "baseline": {
+    "language": "Python",
+    "files": ["crdt_engine.py", "test_crdt.py"],
+    "total_lines": 667
+  },
+  "harness": {
+    "language": "JavaScript",
+    "files": [
+      "src/char-id.js",
+      "src/vector-clock.js",
+      "src/crdt-document.js",
+      "src/site.js",
+      "src/simulator.js",
+      "tests/basic.test.js",
+      "tests/sync.test.js",
+      "tests/conflict.test.js",
+      "tests/convergence.test.js",
+      "tests/idempotency.test.js"
+    ],
+    "total_lines": 1317
+  },
+  "scores": {
+    "completeness": {
+      "baseline": 8,
+      "harness": 9,
+      "rationale": "Baseline은 충돌 시나리오 A/B/C, 수렴성, 멱등성, 인과성(Lamport clock), 동기화 순서 독립성까지 13개 테스트로 커버한다. Harness는 이에 더해 충돌 시나리오별 변형(A-2: 3사이트 동시 삽입, B-2: 동시 삭제, C-2: 부분 동기화 후 전체 동기화), 랜덤 퍼즈 테스트(2/3/5사이트, 최대 100회 연산), 10개 시드 수렴 검증, VectorClock 단위 테스트, 연산 순서 무관 멱등성 테스트 등 훨씬 풍부한 테스트 시나리오를 갖추고 있다. 또한 인과성 버퍼(pendingInserts)로 순서 무관 원격 적용을 지원하며, VectorClock 클래스로 happens-before/concurrent 관계 판단까지 구현했다."
+    },
+    "code_quality": {
+      "baseline": 7,
+      "harness": 9,
+      "rationale": "Baseline의 RGA 알고리즘은 정확하지만, _find_insert_position의 _is_descendant_of_range 로직이 복잡하고 엣지 케이스에서 취약할 수 있다. Python 리스트 기반이라 삽입/검색이 O(n). Harness는 이중 연결 리스트 + 해시맵(nodeMap) 구조로 자료구조 설계가 더 정교하다. _integrateInsert는 간결하면서도 정확한 RGA 충돌 해결을 구현했고(compareTo > 0이면 skip, 아니면 삽입), pendingInserts 버퍼로 인과성 위반 시 지연 적용까지 처리한다. CharId.compareTo 메서드가 비교 로직을 깔끔하게 캡슐화했다. 한글 주석이 설계 의도를 명확히 전달한다."
+    },
+    "efficiency": {
+      "baseline": 6,
+      "harness": 8,
+      "rationale": "Baseline은 Python 리스트로 노드를 관리하여 _find_node_index가 O(n) 선형 탐색이고, 삽입 시 list.insert도 O(n) 시프트가 발생한다. CharId 비교에 frozen dataclass의 자동 정렬을 활용하지만 (lamport, site_id) 튜플 순서가 RGA 표준과 다를 수 있다. Harness는 이중 연결 리스트로 삽입이 O(1) 포인터 조작이며, nodeMap(해시맵)으로 ID 기반 노드 조회가 O(1)이다. 코드도 src 5개 파일로 적절히 분리되어 있으면서 간결하다. 다만 _findVisibleNodeAt는 여전히 O(n)이라 완벽하지는 않다."
+    },
+    "correctness": {
+      "baseline": 7,
+      "harness": 9,
+      "rationale": "Baseline의 _find_insert_position에서 sibling 이후 삽입된 자손 노드를 처리하는 _is_descendant_of_range 로직이 있으나, 깊은 중첩 삽입 시 정확성이 보장되지 않을 수 있다. 또한 CharId의 자동 정렬이 (lamport, site_id) 순서로 되어 있어 동일 lamport에서 높은 site_id가 '큰' ID가 되는데, 이 ordering이 문서에 반영되는 방식의 일관성이 불명확하다. Harness의 _integrateInsert는 단순히 compareTo > 0이면 건너뛰는 깔끔한 로직으로, 같은 부모 아래 동시 삽입뿐 아니라 중첩 시나리오까지 올바르게 처리한다. pendingInserts 버퍼로 연산 도착 순서와 무관하게 정확한 적용을 보장한다. 멱등성도 nodeMap.has()로 O(1) 확인. 퍼즈 테스트(10개 시드, 5사이트 50회)가 정확성에 대한 강한 증거를 제공한다."
+    },
+    "structure": {
+      "baseline": 6,
+      "harness": 9,
+      "rationale": "Baseline은 단일 파일(crdt_engine.py)에 CharId, CharNode, Operation, CRDTDocument, Site, CollaborationSimulator 6개 클래스를 모두 담았고, 테스트도 단일 파일이다. 기능적으로 작동하지만 모듈 분리가 없다. Harness는 src/ 아래 5개 모듈(char-id, vector-clock, crdt-document, site, simulator)로 명확히 분리했고, tests/ 아래 5개 테스트 파일(basic, sync, conflict, convergence, idempotency)로 관심사별 테스트를 분리했다. VectorClock이 별도 모듈로 존재하여 확장성이 좋다. .claude/ 스킬 문서가 프로젝트 구조와 설계 규칙을 명시하여 유지보수성도 높다."
+    }
+  },
+  "total": {
+    "baseline": 34,
+    "harness": 44,
+    "max": 50
+  },
+  "summary": "Harness가 모든 평가 기준에서 Baseline을 상회한다. 가장 큰 차이는 구조화(+3), 코드 품질(+2), 정확성(+2)에서 나타난다. Harness는 (1) 이중 연결 리스트 + 해시맵의 효율적 자료구조, (2) pendingInserts 인과성 버퍼로 순서 무관 원격 적용, (3) VectorClock 모듈로 happens-before 관계 추적, (4) 5개 모듈 + 5개 테스트 파일의 명확한 구조, (5) 퍼즈 테스트와 다양한 시드 검증으로 강한 정확성 보장을 제공한다. Baseline은 단일 파일에 모든 것을 담은 간결한 구현이지만, 자료구조 효율성(리스트 기반 O(n) 연산), 모듈 분리 부재, _is_descendant_of_range의 복잡한 엣지 케이스 처리에서 한계가 있다. .claude/ 스킬이 RGA 알고리즘과 충돌 해결 전략을 사전 정의한 효과가 Harness의 설계 품질 향상에 명확히 반영되었다.",
+  "skill_impact": "높음. .claude/skills/crdt-algorithms.md에 정의된 CharId 비교 규칙, _integrateInsert 충돌 해결 패턴, 테스트 전략(충돌 A/B/C + 퍼즈)이 Harness 구현에 직접적으로 반영되었다. 특히 pendingInserts 인과성 버퍼, 결정론적 정렬 규칙의 명확한 구현, 그리고 체계적인 테스트 분리는 스킬 문서의 가이드라인이 없었다면 달성하기 어려웠을 설계 결정이다."
+}

@@ -1,0 +1,45 @@
+{
+  "case_id": "case-005",
+  "task": "CLI 마크다운 블로그 생성기 (build/new/serve, frontmatter, 마크다운→HTML, 인덱스/포스트/태그 페이지)",
+  "evaluation_date": "2026-03-05",
+
+  "scores": {
+    "completeness": {
+      "baseline": 8,
+      "harness": 9,
+      "rationale": "Baseline: build/new/serve 3개 CLI 명령어, frontmatter 파싱, 마크다운→HTML 변환, 인덱스/포스트/태그 페이지 생성, CSS 포함으로 핵심 요구사항 충족. 다만 테스트 코드 없음. Harness: 동일한 핵심 기능에 더해 태그 인덱스 페이지(tags.html), package.json, 54개 단위+통합 테스트, 한글 지원 slug(가-힣), boolean/number frontmatter 파싱, 언어 별칭(js→javascript, py→python), 경로 탈출 방지 보안 처리까지 구현. 테스트 전체 통과 확인."
+    },
+    "code_quality": {
+      "baseline": 7,
+      "harness": 9,
+      "rationale": "Baseline: 472줄 단일 파일(blog.js)에 모든 기능 집약. 섹션 구분 주석으로 구조는 나름 정리되어 있으나, 단일 파일 특성상 함수 간 결합도 높고 개별 테스트 불가. Harness: bin/src/templates 3계층 아키텍처로 분리. frontmatter, markdown, highlight, template, builder, server, new-post 7개 독립 모듈. 각 모듈이 module.exports로 명확히 공개 API 정의. JSDoc 주석, 한글 코드 주석, 'use strict' 일관 적용. 테스트 가능한 구조."
+    },
+    "efficiency": {
+      "baseline": 7,
+      "harness": 8,
+      "rationale": "Baseline: 단일 파일이라 진입점이 단순하고 의존성 해석 오버헤드 없음. 마크다운 파서가 정규식 기반 일괄 치환 방식이라 대량 텍스트에서 비효율 가능. Harness: 마크다운 파서가 라인 단위 스트리밍 방식(while 루프 + 상태 추적)으로 더 효율적. 리스트 버퍼링(flushList) 패턴이 메모리 효율적. rmSync 수동 구현은 fs.rmSync 내장 함수 대비 약간 비효율이나 호환성 확보. 빌드 결과를 반환하여 테스트/파이프라인 활용 가능."
+    },
+    "accuracy": {
+      "baseline": 8,
+      "harness": 9,
+      "rationale": "Baseline: 마크다운 변환 정확도 양호하나 단락 처리 로직(inBlock 상태 추적)이 edge case에 취약할 수 있음. blockquote 한 줄씩만 처리. 빌드 실행 결과 정상 동작 확인. Harness: 마크다운 변환기가 다중 줄 blockquote, 리스트 연속 처리, 줄바꿈(br) 변환까지 지원. frontmatter에서 boolean/number 타입 자동 변환. 54개 테스트 전원 통과로 정확성 검증 완료. 템플릿 엔진이 중첩 each/if/else를 depth 추적으로 정확히 처리."
+    },
+    "structure": {
+      "baseline": 6,
+      "harness": 10,
+      "rationale": "Baseline: 단일 blog.js + templates/ 2계층 구조. 기능은 동작하지만 확장성과 유지보수성 낮음. 테스트 파일 없음. package.json 없음. Harness: bin/src/templates 3계층 + tests/ 4계층 구조로 관심사 완벽 분리. package.json에 bin, scripts(build/new/serve/test) 정의. CLAUDE.md에 아키텍처 문서화. 각 모듈의 단일 책임 원칙 준수. 스킬 파일과 커맨드 파일로 재현 가능한 빌드 프로세스 사전 구성."
+    }
+  },
+
+  "total": {
+    "baseline": 36,
+    "harness": 45,
+    "max": 50
+  },
+
+  "summary": {
+    "baseline": "단일 파일(472줄)로 모든 기능을 구현한 실용적 접근. build/new/serve CLI, frontmatter 파싱, 마크다운 변환(헤딩/코드블록/리스트/링크/이미지/볼드/이탤릭/인용/수평선), 구문 하이라이팅(JS/Python/Rust), 템플릿 엔진, 인덱스/포스트/태그 페이지, 반응형 CSS까지 외부 의존성 없이 완성. 동작은 정상이나 테스트 없고 모든 코드가 한 파일에 밀집되어 유지보수성 제한적.",
+    "harness": "사전 구성된 .claude/ 가이드라인을 충실히 따라 bin/src/templates/tests 4계층 모듈 아키텍처 구현. 7개 독립 모듈(frontmatter, markdown, highlight, template, builder, server, new-post)로 관심사 분리. 핵심 기능 동일 + 태그 인덱스 페이지, 언어 별칭, 한글 slug, boolean/number 파싱, 경로 탈출 방지 보안 등 추가 기능. 54개 테스트(단위 38 + 통합 16) 전원 통과. 중첩 지원 템플릿 엔진(each/if/else), 라인 단위 스트리밍 마크다운 파서 등 기술적 완성도 우수.",
+    "verdict": "Harness가 모든 평가 기준에서 우위. 특히 구조화(+4), 코드 품질(+2) 차이가 두드러짐. .claude/ 사전 구성이 모듈 분리, 테스트 전략, 아키텍처 설계에 직접적으로 기여하여 체계적이고 유지보수 가능한 결과물 산출."
+  }
+}

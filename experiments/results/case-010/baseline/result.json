@@ -1,0 +1,11 @@
+{
+  "case_id": "case-010",
+  "condition": "baseline",
+  "files_created": [
+    "crdt_engine.py",
+    "test_crdt.py",
+    "result.json"
+  ],
+  "total_lines": 667,
+  "approach": "RGA (Replicated Growable Array) CRDT with Lamport clock + siteId character IDs. Internal linked-list representation with virtual HEAD sentinel. Tombstone deletion preserves causal ordering. Concurrent inserts at same position resolved deterministically by (lamport, siteId) total order (higher wins). CRDTDocument provides localInsert/localDelete/applyRemote/getText. Site wraps document with pending ops buffer and bidirectional sync. CollaborationSimulator manages multi-site scenarios with syncAll and verifyConvergence. Idempotency enforced via applied-ops set. All 13 tests pass: basic ops, 2-site sync, conflict A (concurrent insert), conflict B (insert vs delete), conflict C (3-site complex), convergence stress, idempotency, causality, sync order independence."
+}

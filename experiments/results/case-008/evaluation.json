@@ -1,0 +1,65 @@
+{
+  "case_id": "case-008",
+  "task": "이벤트 드리븐 마이크로서비스 주문 시스템 (EventBus + 4서비스 + SAGA + 보상 트랜잭션)",
+  "baseline": {
+    "completeness": 9,
+    "code_quality": 7,
+    "efficiency": 7,
+    "correctness": 8,
+    "structure": 5,
+    "total": 36,
+    "summary": "4서비스(Order, Inventory, Payment, Notification) + EventBus + SAGA Orchestrator + 5개 시나리오 테스트를 모두 구현. 단일 플랫 디렉토리에 7개 파일(856줄). EventBus가 와일드카드 패턴과 correlation ID 추적을 지원하고, SAGA는 Promise 기반 타임아웃 감시 방식으로 구현. 낙관적 잠금(버전 체크), 멱등성(idempotency key), 보상 트랜잭션(재고 원복) 모두 동작. PaymentService가 EventBus의 이벤트 로그를 직접 조회(getEventsForCorrelation)하여 totalAmount를 가져오는 설계가 서비스 격리 원칙에 약간 위배됨. 테스트는 자체 assert/runTest 래퍼로 작성되어 프레임워크 없이 동작하나 구조화가 부족."
+  },
+  "harness": {
+    "completeness": 9,
+    "code_quality": 9,
+    "efficiency": 8,
+    "correctness": 8,
+    "structure": 9,
+    "total": 43,
+    "summary": "4서비스 + EventBus + SAGA Orchestrator + 5개 시나리오를 모두 구현. src/services/, src/utils/, tests/ 등 명확한 디렉토리 분리. EventBus는 정확 매칭(subscribe)과 와일드카드(subscribePattern)를 분리하고 subscribeOnce도 지원. Promise.allSettled로 핸들러 에러 격리. SAGA Orchestrator는 단계별 실행+보상 역순 실행을 명시적 steps/compensation 정의 방식으로 구현하여 재사용성이 높음. 커스텀 에러 클래스(InsufficientStockError, ConcurrencyError, SagaTimeoutError) 사용으로 에러 처리가 체계적. Logger/CorrelationId 유틸리티 분리. Jest 기반 3개 테스트 스위트(단위 7개 + SAGA 5개 + 통합 5개 = 17개). 주문 모델이 단일 productId만 지원(배열 items 미지원)하여 Baseline 대비 약간 단순. 통합 테스트에서 waitForEvents(setTimeout)에 의존하여 타이밍 취약점 존재."
+  },
+  "criteria_comparison": {
+    "completeness": {
+      "baseline": 9,
+      "harness": 9,
+      "analysis": "양쪽 모두 4서비스 + EventBus + SAGA + 5 시나리오를 완전히 구현. Baseline은 주문에 items 배열(다중 상품)을 지원하고, Harness는 단일 productId만 지원하여 도메인 모델 측면에서 Baseline이 약간 풍부. Harness는 subscribeOnce, 에러 격리(Promise.allSettled) 등 EventBus 기능이 더 풍부. 전체적으로 동등."
+    },
+    "code_quality": {
+      "baseline": 7,
+      "harness": 9,
+      "analysis": "Harness가 확연히 우수. (1) 커스텀 에러 클래스(InsufficientStockError, ConcurrencyError, SagaTimeoutError) 사용으로 에러 의미가 명확. (2) EventBus에서 subscribe/subscribePattern 분리로 의도가 명확. (3) Promise.allSettled로 핸들러 에러 격리가 체계적. (4) Logger, CorrelationId 유틸리티로 횡단 관심사 분리. Baseline의 PaymentService는 EventBus.getEventsForCorrelation()으로 다른 서비스의 이벤트를 직접 조회하여 서비스 격리 원칙을 위반."
+    },
+    "efficiency": {
+      "baseline": 7,
+      "harness": 8,
+      "analysis": "Harness의 SAGA Orchestrator가 steps/compensation 정의 방식으로 범용적 재사용이 가능한 반면, Baseline의 SAGA는 특정 이벤트를 하드코딩하여 주문 플로우에만 사용 가능. Harness의 EventBus는 정확 매칭과 와일드카드를 Map/Set으로 분리 관리하여 탐색 효율이 좋음. Harness의 추상화 수준이 더 적절."
+    },
+    "correctness": {
+      "baseline": 8,
+      "harness": 8,
+      "analysis": "양쪽 모두 테스트 전체 통과. Baseline의 낙관적 잠금은 동기 실행 환경에서 스냅샷→확인이 즉시 이루어져 실질적 효과가 제한적이나, 다중 아이템 롤백 로직이 있음. Harness의 낙관적 잠금도 동일 한계가 있으나 단일 상품이라 롤백 복잡도가 낮음. 양쪽 모두 멱등성을 구현하고 보상 트랜잭션으로 일관성을 유지. Harness 통합 테스트의 waitForEvents(setTimeout) 패턴은 비결정적 타이밍 의존으로 CI 환경에서 불안정할 수 있음."
+    },
+    "structure": {
+      "baseline": 5,
+      "harness": 9,
+      "analysis": "가장 큰 차이. Baseline은 7개 파일이 단일 디렉토리에 플랫하게 배치. 테스트 프레임워크 없이 자체 assert로 작성. Harness는 src/services, src/utils, tests로 명확히 분리하고 Jest 프레임워크를 사용. 단위 테스트(EventBus 7개, SAGA 5개) + 통합 테스트(5개)로 체계적 테스트 계층화. package.json으로 프로젝트 구성도 완비."
+    }
+  },
+  "winner": "harness",
+  "margin": "significant",
+  "score_difference": {
+    "baseline_total": 36,
+    "harness_total": 43,
+    "difference": 7
+  },
+  "key_differences": [
+    "Harness는 src/services/, src/utils/, tests/ 디렉토리 분리와 Jest 기반 3-tier 테스트(단위+SAGA+통합 17개) 구조를 갖추어 프로젝트 구조가 훨씬 체계적",
+    "Harness의 SAGA Orchestrator는 steps/compensation 정의 기반의 범용 설계로 어떤 비즈니스 플로우에도 재사용 가능. Baseline의 SAGA는 특정 이벤트를 하드코딩",
+    "Harness는 커스텀 에러 클래스(InsufficientStockError, ConcurrencyError, SagaTimeoutError), Logger, CorrelationId 유틸리티 등 코드 품질 인프라가 우수",
+    "Baseline의 PaymentService가 EventBus의 이벤트 로그를 직접 조회하는 것은 서비스 격리 원칙 위반. Harness는 이벤트 payload에 필요 데이터를 포함시켜 서비스 간 직접 참조 없음",
+    "Baseline은 items 배열(다중 상품 주문)을 지원하여 도메인 모델이 더 현실적. Harness는 단일 productId만 지원",
+    "Harness 통합 테스트의 waitForEvents(setTimeout) 패턴은 비결정적이어서 CI 환경 불안정 가능성이 있는 약점"
+  ],
+  "harness_skill_impact": "사전 구성된 .claude/ 스킬의 영향이 명확히 드러남. (1) 서비스 아키텍처 다이어그램과 이벤트 네이밍 규칙이 일관된 구조를 유도. (2) microservice-patterns 스킬(EventBus, SAGA Orchestrator, 낙관적 잠금, 멱등성)이 커스텀 에러 클래스, Promise.allSettled 에러 격리, 범용 SAGA steps/compensation 패턴 등 설계 품질 향상에 기여. (3) 파일 구조 가이드가 디렉토리 분리와 테스트 계층화를 이끌어냄. 특히 SAGA Orchestrator의 설계 차이(하드코딩 vs 범용 정의)가 스킬 가이드의 가장 큰 효과."
+}

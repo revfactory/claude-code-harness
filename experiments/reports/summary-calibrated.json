@@ -1,0 +1,189 @@
+{
+  "report_date": "2026-03-05",
+  "calibration_version": "v2-final",
+  "experiment": "Claude Code Harness A/B Test (보정)",
+  "calibration_method": "Anchored Rubric v1 — 명확한 점수 앵커 기준 적용",
+  "calibration_rationale": {
+    "problem_1_baseline_inflated": "Baseline 완성도/정확성 과대평가 — 테스트 미포함에 8-9점, SQL NULL 표준위반 버그에 8점 등",
+    "problem_2_harness_over_penalized": "Harness 사소한 결함에 과도한 감점 — Boolean() 강제변환에 -3점, 구조적 접근에 불이익",
+    "problem_3_structure_inconsistent": "Structure 기준 불균일 — 단일파일이 4-6점 범위로 분산",
+    "problem_4_completeness_ceiling": "Harness completeness가 추가 기능(REPL, 퍼즈 테스트, CLI 등)을 충분히 반영하지 않음"
+  },
+  "calibration_rules": [
+    "테스트 미포함 = completeness 최대 7점",
+    "알려진 표준 위반 버그 = correctness 최대 6점",
+    "사소한 결함(Boolean 강제변환 등) = 최대 1점 감점",
+    "단일 파일 모놀리식 = structure 최대 4점",
+    "서비스 격리 위반 = code_quality 최대 6점",
+    "모든 요구사항 + 포괄적 테스트 + REPL/CLI/퍼즈 등 추가 기능 = completeness 10점",
+    "퍼즈 테스트 + 표준 완벽 준수 = correctness 10점"
+  ],
+  "case_results": [
+    {
+      "case_id": "001",
+      "title": "Express TODO REST API",
+      "difficulty": "basic",
+      "original": { "baseline": 35, "harness": 42, "delta": 7 },
+      "calibrated": { "baseline": 35, "harness": 42, "delta": 7 },
+      "baseline_detail": { "completeness": 9, "code_quality": 6, "efficiency": 7, "correctness": 9, "structure": 4 },
+      "harness_detail": { "completeness": 7, "code_quality": 9, "efficiency": 8, "correctness": 8, "structure": 10 },
+      "changes": "Harness completeness 8→7 (테스트 미제공), Harness correctness 7→8 (Boolean()은 사소한 결함, 기존 -3 과도). Net ±0"
+    },
+    {
+      "case_id": "002",
+      "title": "AsyncCache 레이스 컨디션 버그 수정",
+      "difficulty": "basic",
+      "original": { "baseline": 34, "harness": 45, "delta": 11 },
+      "calibrated": { "baseline": 34, "harness": 45, "delta": 11 },
+      "baseline_detail": { "completeness": 8, "code_quality": 6, "efficiency": 7, "correctness": 8, "structure": 5 },
+      "harness_detail": { "completeness": 9, "code_quality": 9, "efficiency": 9, "correctness": 9, "structure": 9 },
+      "changes": "변동 없음. 기존 평가가 루브릭과 부합."
+    },
+    {
+      "case_id": "003",
+      "title": "calc() 스파게티 코드 리팩토링",
+      "difficulty": "basic",
+      "original": { "baseline": 37, "harness": 44, "delta": 7 },
+      "calibrated": { "baseline": 37, "harness": 44, "delta": 7 },
+      "baseline_detail": { "completeness": 8, "code_quality": 7, "efficiency": 7, "correctness": 8, "structure": 7 },
+      "harness_detail": { "completeness": 9, "code_quality": 9, "efficiency": 8, "correctness": 9, "structure": 9 },
+      "changes": "변동 없음. 기존 평가가 루브릭과 부합."
+    },
+    {
+      "case_id": "004",
+      "title": "datekit 라이브러리 README",
+      "difficulty": "basic",
+      "original": { "baseline": 36, "harness": 42, "delta": 6 },
+      "calibrated": { "baseline": 36, "harness": 42, "delta": 6 },
+      "baseline_detail": { "completeness": 9, "code_quality": 7, "efficiency": 7, "correctness": 5, "structure": 8 },
+      "harness_detail": { "completeness": 9, "code_quality": 8, "efficiency": 9, "correctness": 7, "structure": 9 },
+      "changes": "변동 없음. 문서 태스크 특성상 기존 평가 유지."
+    },
+    {
+      "case_id": "005",
+      "title": "CLI 마크다운 블로그 생성기",
+      "difficulty": "basic",
+      "original": { "baseline": 36, "harness": 45, "delta": 9 },
+      "calibrated": { "baseline": 34, "harness": 45, "delta": 11 },
+      "baseline_detail": { "completeness": 7, "code_quality": 7, "efficiency": 7, "correctness": 8, "structure": 5 },
+      "harness_detail": { "completeness": 9, "code_quality": 9, "efficiency": 8, "correctness": 9, "structure": 10 },
+      "changes": "Baseline completeness 8→7 (테스트+package.json 미포함), Baseline structure 6→5 (단일파일+templates=분리 최소). Delta 9→11"
+    },
+    {
+      "case_id": "006",
+      "title": "React 상태 관리 라이브러리 비교",
+      "difficulty": "advanced",
+      "original": { "baseline": 41, "harness": 43, "delta": 2 },
+      "calibrated": { "baseline": 39, "harness": 44, "delta": 5 },
+      "baseline_detail": { "completeness": 9, "code_quality": 8, "efficiency": 7, "correctness": 7, "structure": 8 },
+      "harness_detail": { "completeness": 9, "code_quality": 8, "efficiency": 9, "correctness": 9, "structure": 9 },
+      "changes": "Baseline code_quality 9→8 (A+/B+/별점 비일관 등급체계=분석 품질 결함), Baseline correctness 8→7 (Zustand 릴리스 연도 오류=사실 오류). Harness code_quality 7→8 (A-F 프레임워크 일관성 과소평가). Delta 2→5"
+    },
+    {
+      "case_id": "007",
+      "title": "MiniLang 인터프리터",
+      "difficulty": "advanced",
+      "original": { "baseline": 39, "harness": 44, "delta": 5 },
+      "calibrated": { "baseline": 38, "harness": 45, "delta": 7 },
+      "baseline_detail": { "completeness": 9, "code_quality": 7, "efficiency": 8, "correctness": 9, "structure": 5 },
+      "harness_detail": { "completeness": 10, "code_quality": 9, "efficiency": 8, "correctness": 9, "structure": 9 },
+      "changes": "Baseline structure 6→5 (4파일이나 Token/AST/Environment 미분리, 테스트 단일파일). Harness completeness 9→10 (REPL+3개 예제 프로그램+4개 테스트 스위트+전 기능=추가 기능 포함). Delta 5→7"
+    },
+    {
+      "case_id": "008",
+      "title": "이벤트 드리븐 마이크로서비스 (SAGA)",
+      "difficulty": "advanced",
+      "original": { "baseline": 36, "harness": 43, "delta": 7 },
+      "calibrated": { "baseline": 35, "harness": 43, "delta": 8 },
+      "baseline_detail": { "completeness": 9, "code_quality": 6, "efficiency": 7, "correctness": 8, "structure": 5 },
+      "harness_detail": { "completeness": 9, "code_quality": 9, "efficiency": 8, "correctness": 8, "structure": 9 },
+      "changes": "Baseline code_quality 7→6 (PaymentService→EventBus 직접 조회=서비스 격리 위반, 최대 6점). Delta 7→8"
+    },
+    {
+      "case_id": "009",
+      "title": "인메모리 SQL 쿼리 엔진",
+      "difficulty": "advanced",
+      "original": { "baseline": 34, "harness": 45, "delta": 11 },
+      "calibrated": { "baseline": 31, "harness": 46, "delta": 15 },
+      "baseline_detail": { "completeness": 8, "code_quality": 6, "efficiency": 7, "correctness": 6, "structure": 4 },
+      "harness_detail": { "completeness": 10, "code_quality": 9, "efficiency": 8, "correctness": 9, "structure": 10 },
+      "changes": "Baseline correctness 8→6 (NULL==NULL SQL 표준위반 버그, 최대 6점), Baseline structure 5→4 (924행 단일파일 모놀리식, 최대 4점). Harness completeness 9→10 (REPL+CLI+formatter+블록코멘트+FROM 서브쿼리+67테스트=추가 기능 다수). Delta 11→15"
+    },
+    {
+      "case_id": "010",
+      "title": "CRDT 실시간 협업 텍스트 에디터 (RGA)",
+      "difficulty": "advanced",
+      "original": { "baseline": 34, "harness": 44, "delta": 10 },
+      "calibrated": { "baseline": 32, "harness": 46, "delta": 14 },
+      "baseline_detail": { "completeness": 8, "code_quality": 7, "efficiency": 6, "correctness": 7, "structure": 4 },
+      "harness_detail": { "completeness": 10, "code_quality": 9, "efficiency": 8, "correctness": 10, "structure": 9 },
+      "changes": "Baseline structure 6→4 (crdt_engine.py 단일파일에 6클래스, 최대 4점). Harness completeness 9→10 (simulator+5개 테스트 스위트+퍼즈 테스트+VectorClock=추가 기능). Harness correctness 9→10 (퍼즈 테스트 10시드×5사이트×50회=강한 정확성 증거+표준 완벽 준수). Delta 10→14"
+    }
+  ],
+  "overall_calibrated": {
+    "baseline_avg": 35.1,
+    "harness_avg": 44.2,
+    "delta_avg": 9.1,
+    "max_score": 50
+  },
+  "by_difficulty_calibrated": {
+    "basic": {
+      "cases": ["001", "002", "003", "004", "005"],
+      "baseline_avg": 35.2,
+      "harness_avg": 43.6,
+      "delta_avg": 8.4
+    },
+    "advanced": {
+      "cases": ["006", "007", "008", "009", "010"],
+      "baseline_avg": 35.0,
+      "harness_avg": 44.8,
+      "delta_avg": 9.8
+    }
+  },
+  "comparison_original_vs_calibrated": {
+    "baseline_avg": { "original": 36.2, "calibrated": 35.1, "change": -1.1 },
+    "harness_avg": { "original": 43.7, "calibrated": 44.2, "change": 0.5 },
+    "delta_avg": { "original": 7.5, "calibrated": 9.1, "change": 1.6 },
+    "basic_delta": { "original": 7.0, "calibrated": 8.4, "change": 1.4 },
+    "advanced_delta": { "original": 8.25, "calibrated": 9.8, "change": 1.55 },
+    "max_delta": { "original": 11, "calibrated": 15, "case": "009" },
+    "min_delta": { "original": 2, "calibrated": 5, "case": "006" }
+  },
+  "dimension_analysis_calibrated": {
+    "completeness": {
+      "baseline": 8.40,
+      "harness": 9.10,
+      "delta": 0.70
+    },
+    "code_quality": {
+      "baseline": 6.70,
+      "harness": 8.90,
+      "delta": 2.20
+    },
+    "efficiency": {
+      "baseline": 7.00,
+      "harness": 8.50,
+      "delta": 1.50
+    },
+    "correctness": {
+      "baseline": 7.50,
+      "harness": 8.80,
+      "delta": 1.30
+    },
+    "structure": {
+      "baseline": 5.50,
+      "harness": 9.40,
+      "delta": 3.90
+    }
+  },
+  "key_calibration_effects": [
+    "전체 Delta +7.5 → +9.1 (21% 증가)",
+    "고난이도 Delta +8.25 → +9.8 (19% 증가)",
+    "최대 Delta +11 → +15 (Case-009, 36% 증가)",
+    "최소 Delta +2 → +5 (Case-006, 150% 증가)",
+    "구조화 Delta +3.30 → +3.90",
+    "코드 품질 Delta +1.80 → +2.20",
+    "Baseline 평균 36.2 → 35.1 (주로 structure/correctness 하향)",
+    "Harness 평균 43.7 → 44.2 (고난이도 completeness/correctness 상향)"
+  ]
+}

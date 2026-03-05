@@ -1,0 +1,115 @@
+{
+  "calibration_date": "2026-03-05",
+  "rubric_version": "anchored_v1",
+  "cases": {
+    "case_006": {
+      "baseline": {
+        "completeness": 9,
+        "code_quality": 9,
+        "efficiency": 7,
+        "correctness": 7,
+        "structure": 8,
+        "total": 40
+      },
+      "harness": {
+        "completeness": 9,
+        "code_quality": 8,
+        "efficiency": 9,
+        "correctness": 9,
+        "structure": 9,
+        "total": 44
+      },
+      "calibration_notes": "리서치/문서 태스크이므로 code_quality='예제 코드 품질+분석 프레임워크 일관성'으로 해석. Baseline code_quality 9 유지: 예제 코드에서 Redux Toolkit slice 분리, Jotai useAtomValue 등 고급 패턴 활용이 실질적으로 우수. Harness code_quality 7→8 상향: A-F 등급 체계의 일관 적용, 분석 프레임워크의 체계성이 '깔끔한 코드, 일부 패턴 적용(8점)' 수준에 부합하나, 예제 코드 자체는 단순하여 9점에는 미달. Baseline correctness(accuracy) 8→7 하향: Zustand 릴리스 연도 오류(2019→실제 2021)는 사실 오류(factual error)로 '기본 테스트 통과, 일부 엣지케이스 미처리(7점)'에 해당. 등급 체계 비일관(A+/B+/별점 혼용)도 분석 정확성 결함."
+    },
+    "case_007": {
+      "baseline": {
+        "completeness": 9,
+        "code_quality": 7,
+        "efficiency": 8,
+        "correctness": 9,
+        "structure": 5,
+        "total": 38
+      },
+      "harness": {
+        "completeness": 9,
+        "code_quality": 9,
+        "efficiency": 8,
+        "correctness": 9,
+        "structure": 9,
+        "total": 44
+      },
+      "calibration_notes": "Baseline completeness 9 유지: 29개 테스트 통과 + 검증 프로그램 포함으로 '모든 요구사항 + 포괄적 테스트(9점)' 적절. Baseline code_quality 7 유지: AST 노드가 plain object, 에러 클래스 산재, Environment/ReturnSignal 혼재 = '가독성 양호하나 중복/결합도 존재(7점)'. Baseline structure 6→5 하향: 4개 파일이지만 Token/AST/Environment가 독립 분리되지 않고 테스트도 단일 파일 = '2-3파일, 분리 최소(5점)' 수준. 실질적 관심사 분리가 3파일(lexer/parser/evaluator) 수준이고 각 파일 내부에 여러 관심사가 혼재. Harness 전 항목 유지: 10개 소스파일 완벽 분리, Pratt Parser, 에러 계층, 테스트 4파일 계층화."
+    },
+    "case_008": {
+      "baseline": {
+        "completeness": 9,
+        "code_quality": 6,
+        "efficiency": 7,
+        "correctness": 8,
+        "structure": 5,
+        "total": 35
+      },
+      "harness": {
+        "completeness": 9,
+        "code_quality": 9,
+        "efficiency": 8,
+        "correctness": 8,
+        "structure": 9,
+        "total": 43
+      },
+      "calibration_notes": "Baseline code_quality 7→6 하향: PaymentService가 EventBus.getEventsForCorrelation()으로 다른 서비스의 이벤트 로그를 직접 조회 = 서비스 격리 위반. 루브릭 원칙 '서비스 격리 위반 = code_quality 최대 6점' 적용. 이벤트 드리븐 아키텍처에서 서비스가 이벤트 버스의 내부 로그를 직접 참조하는 것은 핵심 설계 원칙 위반. Baseline correctness 8 유지: 테스트는 모두 통과하며, 서비스 격리 위반은 설계 결함이지 정확성 버그는 아님. Baseline structure 5 유지: 7개 파일 플랫 디렉토리 + 자체 assert 래퍼 = '소수 파일, 플랫 구조(6점)'이나 테스트 프레임워크 미사용으로 5점 적절. Harness 전 항목 유지."
+    },
+    "case_009": {
+      "baseline": {
+        "completeness": 8,
+        "code_quality": 6,
+        "efficiency": 7,
+        "correctness": 6,
+        "structure": 4,
+        "total": 31
+      },
+      "harness": {
+        "completeness": 9,
+        "code_quality": 9,
+        "efficiency": 8,
+        "correctness": 9,
+        "structure": 10,
+        "total": 45
+      },
+      "calibration_notes": "Baseline correctness 8→6 하향: == 연산자로 NULL==NULL이 true로 평가되는 SQL 표준 위반 버그가 존재. 루브릭 원칙 '알려진 표준 위반 버그 = correctness 최대 6점' 엄격 적용. SQL 3값 로직은 SQL 엔진의 핵심 정확성 요건이며 이를 위반하면 WHERE val=NULL이 잘못된 결과를 반환함. Baseline structure 5→4 하향: 실질적으로 단일 파일(924행) + 테스트 파일 1개 = 2파일 구조. 루브릭 원칙 '단일 파일 = structure 최대 4점' 적용. 엔진 전체 로직이 하나의 파일에 모놀리식으로 존재하며 Planner 계층도 부재. Baseline completeness 8 유지: 34개 테스트 포함하나 Planner 계층 누락으로 '모든 요구사항 + 기본 테스트(8점)' 적절. Harness 전 항목 유지: 14파일 교과서적 분리, NULL 3값 로직 정확 구현, 67개 테스트 3계층."
+    },
+    "case_010": {
+      "baseline": {
+        "completeness": 8,
+        "code_quality": 7,
+        "efficiency": 6,
+        "correctness": 7,
+        "structure": 4,
+        "total": 32
+      },
+      "harness": {
+        "completeness": 9,
+        "code_quality": 9,
+        "efficiency": 8,
+        "correctness": 9,
+        "structure": 9,
+        "total": 44
+      },
+      "calibration_notes": "Baseline structure 6→4 하향: 단일 파일(crdt_engine.py)에 6개 클래스(CharId, CharNode, Operation, CRDTDocument, Site, CollaborationSimulator)가 모두 포함 + 테스트 1파일 = 실질적 단일 파일 모놀리식. 루브릭 원칙 '단일 파일 = structure 최대 4점' 적용. Baseline correctness 7 유지: _is_descendant_of_range 로직의 깊은 중첩 시 정확성 불확실, CharId 정렬 순서의 RGA 표준 준수 여부 불명확 = '기본 테스트 통과, 일부 엣지케이스 미처리(7점)'. 퍼즈 테스트 없이 정확성 증거가 제한적. Baseline completeness 8 유지: 13개 테스트 포함하나 퍼즈/다양한 시드 검증 부재 = '모든 요구사항 + 기본 테스트(8점)'. Baseline efficiency 6 유지: 리스트 기반 O(n) 삽입/탐색, 해시맵 대신 선형 탐색 = '눈에 띄는 비효율(6점)'. Harness correctness 9 유지: 퍼즈 테스트(10개 시드, 5사이트 50회)로 강한 정확성 증거."
+    }
+  },
+  "score_summary": {
+    "case_006": { "baseline": 40, "harness": 44, "delta": 4, "prev_baseline": 41, "prev_harness": 43 },
+    "case_007": { "baseline": 38, "harness": 44, "delta": 6, "prev_baseline": 39, "prev_harness": 44 },
+    "case_008": { "baseline": 35, "harness": 43, "delta": 8, "prev_baseline": 36, "prev_harness": 43 },
+    "case_009": { "baseline": 31, "harness": 45, "delta": 14, "prev_baseline": 34, "prev_harness": 45 },
+    "case_010": { "baseline": 32, "harness": 44, "delta": 12, "prev_baseline": 34, "prev_harness": 44 }
+  },
+  "calibration_principles_applied": [
+    "테스트 미포함 = completeness 최대 7점 (해당 케이스 없음, 모두 테스트 포함)",
+    "알려진 표준 위반 버그 = correctness 최대 6점 (Case-009 Baseline: NULL==NULL SQL 위반)",
+    "단일 파일 = structure 최대 4점 (Case-009 Baseline: 924행 단일파일, Case-010 Baseline: crdt_engine.py 단일파일)",
+    "서비스 격리 위반 = code_quality 최대 6점 (Case-008 Baseline: PaymentService→EventBus 직접 조회)",
+    "사소한 결함 = 최대 1점 감점 (Case-006 Baseline accuracy: Zustand 연도 오류)"
+  ]
+}

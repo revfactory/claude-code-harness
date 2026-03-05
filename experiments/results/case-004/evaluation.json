@@ -1,0 +1,94 @@
+{
+  "task": "datekit 라이브러리 README.md (9개 섹션, API 문서 포함)",
+  "harness_condition": ".claude/에 정확성 최우선 규칙, api-documentation 스킬(함수 문서 템플릿, format 토큰 17종 전수 목록, 정확성 체크리스트)이 사전 구성됨",
+  "evaluation_date": "2026-03-05",
+  "criteria": {
+    "completeness": {
+      "weight": "20%",
+      "baseline": {
+        "score": 9,
+        "rationale": "9개 섹션 모두 포함: 배지, 핵심 특징, 설치, Quick Start, API 문서, TypeScript, 브라우저 CDN, 기여 가이드, 라이선스. 빠짐없이 충실하게 구성됨."
+      },
+      "harness": {
+        "score": 9,
+        "rationale": "9개 섹션 모두 포함: 배지, Core Features, Installation, Quick Start, API Reference, TypeScript, Browser/CDN, Contributing, License. 모든 요구 섹션 충족."
+      }
+    },
+    "code_quality": {
+      "weight": "20%",
+      "baseline": {
+        "score": 7,
+        "rationale": "예제 코드가 일관되고 정확하나, 파라미터 테이블에 Required 컬럼이 없음. format 함수 예제가 기본적인 패턴만 사용. 전체적으로 깔끔하지만 다양성이 부족."
+      },
+      "harness": {
+        "score": 8,
+        "rationale": "파라미터 테이블에 Required 컬럼 추가로 API 문서 품질 향상. 예제가 다양한 패턴(12시간, 밀리초, 요일 등)을 보여줌. 다만 format 예제(line 112)에서 MMMM 토큰을 사용하면서 토큰 테이블에는 MMMM을 나열하지 않은 불일치가 존재."
+      }
+    },
+    "efficiency": {
+      "weight": "15%",
+      "baseline": {
+        "score": 7,
+        "rationale": "384줄로 내용 대비 다소 장황. 특히 MIT 라이선스 전문을 README에 포함한 것은 불필요한 중복(별도 LICENSE 파일이 일반적). 설치 섹션도 각 패키지 매니저를 별도 코드블록으로 분리하여 공간 낭비."
+      },
+      "harness": {
+        "score": 9,
+        "rationale": "363줄이지만 더 많은 정보를 담고 있음. 라이선스는 링크로 처리, 설치는 하나의 코드블록에 통합. 불필요한 반복 없이 핵심 정보를 효율적으로 전달."
+      }
+    },
+    "accuracy": {
+      "weight": "30%",
+      "baseline": {
+        "score": 5,
+        "rationale": "format 토큰이 6개(YYYY, MM, DD, HH, mm, ss)만 나열되어 요구된 17종 중 11개 누락 — SSS, ddd, dddd, MMM, MMMM, A, a, Z, ZZ, X, YY 등이 빠짐. diff 함수의 음수 반환 가능성 미언급. 선택적 파라미터 표기는 적절함('선택' 표기). 예제 출력값(diff 63일 등)은 수학적으로 정확."
+      },
+      "harness": {
+        "score": 7,
+        "rationale": "format 토큰 17개를 테이블에 나열했으나, 요구된 17종(YYYY,MM,DD,HH,mm,ss,SSS,ddd,dddd,MMM,MMMM,A,a,Z,ZZ,X)과 정확히 일치하지 않음. MMM, MMMM, Z, ZZ, X가 누락되고 대신 YY, M, D, H, hh, h가 포함됨. 예제에서 MMMM을 사용하면서 토큰 테이블에 미포함 — 내부 불일치. diff 함수의 음수 반환을 명시적으로 문서화한 점, milliseconds 단위 포함, parse 실패 시 invalid Date 반환 명시 등은 baseline 대비 명확히 우수. 선택적 파라미터 Required 컬럼으로 명확히 구분."
+      }
+    },
+    "structure": {
+      "weight": "15%",
+      "baseline": {
+        "score": 8,
+        "rationale": "수평선(---)으로 섹션 구분이 명확. 한국어로 일관성 유지. 타입 정의 섹션에 declare 문까지 포함하여 참조하기 좋음. 다만 목차(TOC)가 없어 긴 문서 탐색이 불편."
+      },
+      "harness": {
+        "score": 9,
+        "rationale": "영어로 일관성 유지. API Reference 내 각 함수가 수평선으로 구분되어 가독성 좋음. Contributing이 번호 리스트로 단계별 정리되어 있어 따라하기 쉬움. Code Style 소섹션까지 포함. 다만 역시 TOC 없음."
+      }
+    }
+  },
+  "total_scores": {
+    "baseline": 7.0,
+    "harness": 8.2,
+    "calculation": "baseline = 9*0.20 + 7*0.20 + 7*0.15 + 5*0.30 + 8*0.15 = 1.80+1.40+1.05+1.50+1.20 = 6.95 ≈ 7.0 | harness = 9*0.20 + 8*0.20 + 9*0.15 + 7*0.30 + 9*0.15 = 1.80+1.60+1.35+2.10+1.35 = 8.20"
+  },
+  "summary": {
+    "baseline_strengths": [
+      "한국어로 일관된 문서 작성",
+      "선택적 파라미터(baseDate) 명확히 표기",
+      "예제 출력값의 수학적 정확성 (diff 63일 등)",
+      "TypeScript declare 문 전체 포함"
+    ],
+    "baseline_weaknesses": [
+      "format 토큰 6개만 나열 — 17종 요구 대비 심각한 누락 (SSS, ddd, dddd, MMM, MMMM, A, a, Z, ZZ, X, YY 등 미포함)",
+      "diff 함수의 음수 반환 가능성 미문서화",
+      "MIT 라이선스 전문을 README에 포함하여 비효율적",
+      "파라미터 테이블에 Required 컬럼 없음"
+    ],
+    "harness_strengths": [
+      "format 토큰 17개 나열로 baseline 대비 대폭 개선",
+      "diff 음수 반환, parse 실패 시 invalid Date 반환 등 엣지 케이스 명시",
+      "Required 컬럼으로 필수/선택 파라미터 명확 구분",
+      "milliseconds 단위 포함으로 API 커버리지 확대",
+      "간결하면서도 정보 밀도 높은 효율적 구성"
+    ],
+    "harness_weaknesses": [
+      "요구된 format 토큰 17종과 정확히 일치하지 않음 — MMM, MMMM, Z, ZZ, X 누락",
+      "예제에서 MMMM 토큰을 사용하면서 토큰 테이블에 미포함하는 내부 불일치",
+      "TypeScript 섹션에 함수별 declare 문이 없어 baseline보다 참조성 약함"
+    ],
+    "verdict": "Harness가 baseline 대비 전반적으로 우수(8.2 vs 7.0). 특히 정확성 측면에서 format 토큰 수(17 vs 6), 엣지 케이스 문서화, 파라미터 필수/선택 구분에서 큰 차이를 보임. 다만 harness도 요구된 정확한 17종 토큰(MMM, MMMM, Z, ZZ, X)을 완전히 충족하지 못했고, MMMM 사용-미나열 불일치라는 정확성 결함이 있어 만점에는 미치지 못함. .claude/ 사전 구성(정확성 최우선 규칙, 토큰 전수 목록)이 토큰 커버리지 확대에 기여했으나, 목록 전수 반영까지는 달성하지 못한 한계가 관찰됨."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "case_id": "case-005",
+  "condition": "baseline",
+  "files_created": [
+    "blog.js",
+    "templates/layout.html",
+    "templates/index.html",
+    "templates/post.html",
+    "templates/tag.html",
+    "templates/styles.css",
+    "posts/hello-world.md",
+    "posts/nodejs-tips.md",
+    "posts/python-basics.md"
+  ],
+  "total_lines": 899,
+  "approach": "Single-file Node.js CLI blog generator with zero external dependencies. Implements YAML frontmatter parsing via regex, custom markdown-to-HTML converter supporting headings, code blocks, lists, links, images, blockquotes, bold/italic, and horizontal rules. Includes keyword-based syntax highlighting for JavaScript, Python, and Rust. Uses a simple {{ var }} template engine with layout/index/post/tag templates. CLI supports build (generates full static site to dist/), new <title> (scaffolds a new post with frontmatter), and serve (HTTP dev server). Posts sorted by date descending, tag pages auto-generated, responsive CSS with code highlighting theme."
+}

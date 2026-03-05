@@ -1,0 +1,54 @@
+{
+  "case_id": "case-001",
+  "category": "code-generation",
+  "title": "Express TODO REST API (CRUD, 유효성검사, 에러핸들링)",
+  "baseline": {
+    "completeness": {
+      "score": 9,
+      "notes": "CRUD 전체 구현 완료. GET(목록/단건), POST, PUT, DELETE 모두 정상. 404 라우트 핸들러, 에러 핸들링 미들웨어, 유효성 검사(title 필수/비어있는 문자열/completed 타입 체크) 모두 포함. 테스트 파일(test.js)까지 제공하여 검증 가능. module.exports에 resetStore까지 제공."
+    },
+    "code_quality": {
+      "score": 6,
+      "notes": "단일 파일(app.js)에 모든 로직이 집중된 모놀리식 구조. 전역 변수(todos, nextId)를 직접 조작. 코드 자체는 깔끔하고 가독성 좋으나, 관심사 분리가 전혀 없음. 라우트, 컨트롤러, 모델, 미들웨어가 모두 한 파일에 혼재."
+    },
+    "efficiency": {
+      "score": 7,
+      "notes": "불필요한 의존성 없이 express만 사용. 코드가 간결하고 직접적. 다만 todos 배열을 직접 참조로 반환하므로 외부에서 mutation 가능한 잠재적 문제 존재. parseInt 사용은 적절."
+    },
+    "accuracy": {
+      "score": 9,
+      "notes": "모든 HTTP 상태코드(200, 201, 400, 404, 500) 올바르게 사용. title 유효성 검사가 정확(undefined, null, 비문자열, 빈 문자열 모두 체크). completed 타입 체크도 boolean으로 정확히 검증. id 파싱도 parseInt(10)으로 정확."
+    },
+    "structure": {
+      "score": 4,
+      "notes": "단일 파일 구조로 확장성이 매우 낮음. MVC나 레이어 분리가 전혀 없음. 프로젝트가 커지면 유지보수 불가. package.json의 main이 app.js로 설정되어 있고 scripts도 최소한."
+    },
+    "total": 35
+  },
+  "harness": {
+    "completeness": {
+      "score": 8,
+      "notes": "CRUD 전체 구현 완료. 유효성 검사 미들웨어(title 필수/빈 문자열/타입 체크, ID 파라미터 유효성)와 에러 핸들러(JSON 파싱 에러 포함) 구현. 다만 PUT에서 completed 타입을 Boolean()으로 강제 변환하여 엄격한 타입 검증이 없음(문자열 'false' 등이 true로 변환됨). 404 라우트 핸들러 미구현. 테스트 파일 미제공."
+    },
+    "code_quality": {
+      "score": 9,
+      "notes": "MVC 패턴에 따른 명확한 관심사 분리. Model(TodoStore 클래스), Controller, Routes, Middleware가 각각 독립 모듈로 분리. TodoStore는 클래스 기반으로 캡슐화되어 있고, 반환값을 spread 복사하여 불변성 보장. 미들웨어 체인이 깔끔하게 구성됨. validateIdParam이 req.resourceId로 파싱된 값을 전달하는 패턴도 우수."
+    },
+    "efficiency": {
+      "score": 8,
+      "notes": "express만 사용하여 의존성 최소화. TodoStore에서 spread 연산자로 불변 복사본 반환은 약간의 오버헤드가 있으나 안전성 확보. 미들웨어 체인을 통한 유효성 검사가 라우트 핸들러의 복잡도를 낮춤. JSON 파싱 에러 전용 핸들링은 효율적."
+    },
+    "accuracy": {
+      "score": 7,
+      "notes": "대부분 정확하나 몇 가지 문제점. (1) PUT에서 completed를 Boolean()으로 강제 변환하여 'false' 문자열이 true가 되는 버그 가능성. (2) PUT 라우트에 validateTodoBody가 적용되어 있어 title 없이 completed만 업데이트하려면 400 에러 발생 - 부분 업데이트 불가. (3) 404 라우트 핸들러 누락으로 존재하지 않는 경로 접근 시 Express 기본 응답 반환."
+    },
+    "structure": {
+      "score": 10,
+      "notes": "교과서적인 MVC 아키텍처. src/ 하위에 models/, controllers/, routes/, middleware/ 디렉토리로 명확히 분리. 각 파일이 단일 책임 원칙을 준수. 라우트 정의가 미들웨어 체인으로 선언적. 확장성과 유지보수성이 뛰어남. package.json의 main도 src/app.js로 적절히 설정."
+    },
+    "total": 42
+  },
+  "delta": 7,
+  "winner": "harness",
+  "summary": "Baseline은 단일 app.js 파일에 모든 로직을 담은 모놀리식 구조지만, CRUD/유효성검사/에러핸들링이 정확하고 테스트 파일까지 포함하여 완성도와 정확성이 높다. Harness는 .claude/ 사전 구성(MVC 가이드, express-api-design 스킬) 덕분에 models/controllers/routes/middleware로 완벽히 분리된 MVC 아키텍처를 산출했으며, TodoStore 클래스의 불변 반환, ID 파라미터 검증 미들웨어, JSON 파싱 에러 핸들링 등 설계 품질이 월등히 우수하다. 다만 Harness는 PUT의 validateTodoBody 적용으로 부분 업데이트가 불가능한 정확성 이슈와 404 라우트 핸들러 누락이 감점 요인이다. 종합적으로 Harness가 +7점 우위이며, 구조화(+6)와 코드 품질(+3) 차이가 핵심 격차다."
+}

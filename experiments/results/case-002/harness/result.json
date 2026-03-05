@@ -1,0 +1,13 @@
+{
+  "case_id": "case-002",
+  "condition": "harness",
+  "files_created": [
+    "bug-analysis.md",
+    "async-cache.js",
+    "async-cache.test.js",
+    "result.json"
+  ],
+  "total_lines": 222,
+  "agents_used": 0,
+  "approach": "CLAUDE.md/skills/commands 지침에 따라 체계적으로 수행: (1) 버그 분석 및 문서화 - 동일 키 중복 fetch, refresh/get 경합, 에러 시 pending 미정리 3가지 레이스 컨디션 식별. (2) _fetch() 헬퍼 메서드로 공통 로직 추출하여 pending Map에 Promise를 저장, 동일 키 요청 중복 방지. try/finally 패턴으로 에러 시에도 pending 정리 보장. refresh()는 기존 pending을 삭제 후 새 _fetch() 호출하여 원자적 갱신. (3) Jest 기반 10개 테스트 작성 - 기본 동작 4개, 동시성 시나리오 6개(동시 get, refresh 중 get, 에러 후 정리, 에러 전파, 키 독립성, refresh 에러). 전체 테스트 통과 확인."
+}

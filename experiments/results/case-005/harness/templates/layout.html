@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="{{ baseUrl }}/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="{{ baseUrl }}/" class="site-title">Blog</a>
+      <div class="nav-links">
+        <a href="{{ baseUrl }}/">Home</a>
+        <a href="{{ baseUrl }}/tags.html">Tags</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    {{ content }}
+  </main>
+  <footer>
+    <p>Built with Markdown Blog Generator</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Basics for Beginners</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="site-title">Blog</a>
+    </nav>
+  </header>
+  <main>
+    <article class="post">
+  <header class="post-header">
+    <h1>Python Basics for Beginners</h1>
+    <div class="post-meta">
+      <time datetime="2026-03-05">2026-03-05</time>
+      <span class="author">by Robin</span>
+    </div>
+    <div class="tags"><a href="/tags/python.html" class="tag">python</a> <a href="/tags/tutorial.html" class="tag">tutorial</a> <a href="/tags/intro.html" class="tag">intro</a></div>
+  </header>
+  <div class="post-content">
+    
+<h1>Python Basics for Beginners</h1>
+
+<p>Python is one of the most popular programming languages. Let's look at the fundamentals.</p>
+
+<h2>Variables and Types</h2>
+
+<p>Python uses dynamic typing:</p>
+
+<pre><code class="language-python">name = <span <span class="hl-keyword">class</span>="hl-string">&quot;Alice&quot;</span>
+age = <span <span class="hl-keyword">class</span>="hl-number">30</span>
+is_active = <span class="hl-keyword">True</span>
+scores = [<span <span class="hl-keyword">class</span>="hl-number">95</span>, <span <span class="hl-keyword">class</span>="hl-number">87</span>, <span <span class="hl-keyword">class</span>="hl-number">92</span>]</code></pre>
+
+<h2>Functions</h2>
+
+<p>Defining functions is straightforward:</p>
+
+<pre><code class="language-python"><span class="hl-keyword">def</span> greet(name, greeting=<span <span class="hl-keyword">class</span>="hl-string">&quot;Hello&quot;</span>):
+    <span class="hl-keyword">return</span> f<span <span class="hl-keyword">class</span>="hl-string">&quot;{greeting}, {name}!&quot;</span>
+
+result = greet(<span <span class="hl-keyword">class</span>="hl-string">&quot;World&quot;</span>)
+print(result)</code></pre>
+
+<h2>List Comprehensions</h2>
+
+<p>One of Python's most powerful features:</p>
+
+<pre><code class="language-python">numbers = [<span <span class="hl-keyword">class</span>="hl-number">1</span>, <span <span class="hl-keyword">class</span>="hl-number">2</span>, <span <span class="hl-keyword">class</span>="hl-number">3</span>, <span <span class="hl-keyword">class</span>="hl-number">4</span>, <span <span class="hl-keyword">class</span>="hl-number">5</span>]
+squares = [n ** <span <span class="hl-keyword">class</span>="hl-number">2</span> <span class="hl-keyword">for</span> n <span class="hl-keyword">in</span> numbers <span class="hl-keyword">if</span> n &gt; <span <span class="hl-keyword">class</span>="hl-number">2</span>]
+<span <span class="hl-keyword">class</span>="hl-comment"># Result: [<span <span class="hl-keyword">class</span>="hl-number">9</span>, <span <span class="hl-keyword">class</span>="hl-number">16</span>, <span <span class="hl-keyword">class</span>="hl-number">25</span>]</span></code></pre>
+
+<h2>Classes</h2>
+
+<p>Object-oriented programming in Python:</p>
+
+<pre><code class="language-python"><span class="hl-keyword">class</span> Animal:
+    <span class="hl-keyword">def</span> __init__(<span class="hl-keyword">self</span>, name, sound):
+        <span class="hl-keyword">self</span>.name = name
+        <span class="hl-keyword">self</span>.sound = sound
+
+    <span class="hl-keyword">def</span> speak(<span class="hl-keyword">self</span>):
+        <span class="hl-keyword">return</span> f<span <span class="hl-keyword">class</span>="hl-string">&quot;{<span class="hl-keyword">self</span>.name} says {<span class="hl-keyword">self</span>.sound}!&quot;</span>
+
+dog = Animal(<span <span class="hl-keyword">class</span>="hl-string">&quot;Dog&quot;</span>, <span <span class="hl-keyword">class</span>="hl-string">&quot;Woof&quot;</span>)
+print(dog.speak())</code></pre>
+
+Python's simplicity and readability make it an excellent choice for beginners and experts alike.
+
+  </div>
+  <footer class="post-footer">
+    <a href="/">&larr; Back to all posts</a>
+  </footer>
+</article>
+
+  </main>
+  <footer>
+    <p>Built with Markdown Blog Generator</p>
+  </footer>
+</body>
+</html>

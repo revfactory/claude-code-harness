@@ -1,0 +1,11 @@
+{
+  "case_id": "case-002",
+  "condition": "baseline",
+  "files_created": [
+    "async-cache.js",
+    "async-cache.test.js",
+    "result.json"
+  ],
+  "total_lines": 213,
+  "approach": "Leveraged the existing but unused 'pending' Map to store in-flight promises. For get(), before calling fetchFn, check if a promise is already pending for the key and return it if so — this deduplicates concurrent fetches. For refresh(), delete the cache entry and store a new fetch promise in pending so that concurrent get() calls wait for the refreshed value instead of triggering a separate fetch. Both get() and refresh() attach .then() error handlers that delete the key from pending on failure, ensuring the cache does not get stuck in a broken state and future calls can retry."
+}

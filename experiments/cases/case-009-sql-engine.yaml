@@ -1,0 +1,131 @@
+id: case-009
+category: complex-system
+title: "인메모리 SQL 쿼리 엔진"
+difficulty: expert
+description: |
+  인메모리 데이터에 대해 SQL 쿼리를 실행하는 쿼리 엔진을 구현하세요.
+
+  ## 지원할 SQL 문법
+
+  ### DDL
+  ```sql
+  CREATE TABLE users (id INT, name TEXT, age INT, city TEXT);
+  CREATE TABLE orders (id INT, user_id INT, product TEXT, amount FLOAT, created_at TEXT);
+  DROP TABLE users;
+  ```
+
+  ### DML - INSERT
+  ```sql
+  INSERT INTO users VALUES (1, 'Alice', 30, 'Seoul');
+  INSERT INTO users (id, name, age) VALUES (2, 'Bob', 25);
+  ```
+
+  ### DML - SELECT (핵심)
+  ```sql
+  -- 기본 조회
+  SELECT * FROM users;
+  SELECT name, age FROM users;
+
+  -- WHERE 절 (AND, OR, 비교연산, LIKE, IN, BETWEEN, IS NULL)
+  SELECT * FROM users WHERE age > 25 AND city = 'Seoul';
+  SELECT * FROM users WHERE name LIKE 'A%';
+  SELECT * FROM users WHERE age IN (25, 30, 35);
+  SELECT * FROM users WHERE age BETWEEN 20 AND 30;
+  SELECT * FROM users WHERE city IS NULL;
+
+  -- ORDER BY
+  SELECT * FROM users ORDER BY age DESC, name ASC;
+
+  -- LIMIT / OFFSET
+  SELECT * FROM users LIMIT 10 OFFSET 5;
+
+  -- 집계 함수
+  SELECT COUNT(*), AVG(age), SUM(age), MIN(age), MAX(age) FROM users;
+
+  -- GROUP BY + HAVING
+  SELECT city, COUNT(*) as cnt, AVG(age) as avg_age
+  FROM users
+  GROUP BY city
+  HAVING COUNT(*) > 1;
+
+  -- JOIN (INNER, LEFT)
+  SELECT u.name, o.product, o.amount
+  FROM users u
+  INNER JOIN orders o ON u.id = o.user_id
+  WHERE o.amount > 100;
+
+  SELECT u.name, o.product
+  FROM users u
+  LEFT JOIN orders o ON u.id = o.user_id;
+
+  -- 서브쿼리
+  SELECT * FROM users
+  WHERE id IN (SELECT user_id FROM orders WHERE amount > 100);
+
+  -- AS 별칭
+  SELECT name AS user_name, age * 2 AS double_age FROM users;
+
+  -- DISTINCT
+  SELECT DISTINCT city FROM users;
+  ```
+
+  ### DML - UPDATE / DELETE
+  ```sql
+  UPDATE users SET age = 31, city = 'Busan' WHERE id = 1;
+  DELETE FROM users WHERE age < 20;
+  ```
+
+  ## 구현 요구사항
+  1. **SQL Parser**: SQL 문자열 → AST (재귀 하강 파서)
+  2. **Query Planner**: AST → 실행 계획 (논리적 → 물리적 계획)
+  3. **Query Executor**: 실행 계획 → 결과셋
+  4. **Storage Engine**: 인메모리 테이블 저장소, 스키마 관리
+  5. **Index**: 기본 B-Tree 또는 해시 인덱스 (선택적)
+  6. **표현식 평가기**: WHERE 절, 산술식, 함수 호출 평가
+  7. **결과 포맷터**: 결과를 테이블 형식으로 출력
+  8. **REPL**: 대화형 SQL 실행 환경
+  9. **에러 처리**: 문법 에러, 테이블/컬럼 미존재 등
+
+  ## 검증 쿼리
+  ```sql
+  CREATE TABLE employees (id INT, name TEXT, dept TEXT, salary FLOAT);
+  INSERT INTO employees VALUES (1, 'Alice', 'Engineering', 90000);
+  INSERT INTO employees VALUES (2, 'Bob', 'Engineering', 85000);
+  INSERT INTO employees VALUES (3, 'Charlie', 'Marketing', 75000);
+  INSERT INTO employees VALUES (4, 'Diana', 'Engineering', 95000);
+  INSERT INTO employees VALUES (5, 'Eve', 'Marketing', 80000);
+  INSERT INTO employees VALUES (6, 'Frank', 'Sales', 70000);
+
+  -- 부서별 평균 급여가 80000 이상인 부서
+  SELECT dept, COUNT(*) as count, AVG(salary) as avg_salary
+  FROM employees
+  GROUP BY dept
+  HAVING AVG(salary) >= 80000
+  ORDER BY avg_salary DESC;
+  -- 결과: Engineering (3, 90000)
+
+  CREATE TABLE projects (id INT, emp_id INT, name TEXT);
+  INSERT INTO projects VALUES (1, 1, 'Alpha');
+  INSERT INTO projects VALUES (2, 1, 'Beta');
+  INSERT INTO projects VALUES (3, 2, 'Alpha');
+  INSERT INTO projects VALUES (4, 4, 'Gamma');
+
+  -- JOIN + 서브쿼리
+  SELECT e.name, p.name as project
+  FROM employees e
+  INNER JOIN projects p ON e.id = p.emp_id
+  WHERE e.id IN (SELECT emp_id FROM projects GROUP BY emp_id HAVING COUNT(*) > 1);
+  -- 결과: Alice-Alpha, Alice-Beta, Bob-Alpha (프로젝트 2개 이상 참여자)
+  ```
+expected_outputs:
+  - "SQL 파서"
+  - "쿼리 플래너"
+  - "실행 엔진"
+  - "스토리지 엔진"
+  - "REPL"
+  - "테스트"
+evaluation_criteria:
+  completeness: "SELECT 전체 기능(WHERE/JOIN/GROUP BY/서브쿼리) + DDL/DML"
+  quality: "파서-플래너-실행기 분리, 확장 가능한 설계"
+  correctness: "검증 쿼리가 올바른 결과를 반환"
+  efficiency: "쿼리 실행 효율성, 인덱스 활용"

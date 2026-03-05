@@ -1,0 +1,175 @@
+{
+  "report_date": "2026-03-05",
+  "experiment": "Claude Code Harness A/B 실험 (v2 - .claude/ 사전 구성)",
+  "version": "v2",
+  "total_cases": 6,
+  "overall": {
+    "harness_wins": 6,
+    "baseline_wins": 0,
+    "ties": 0,
+    "harness_win_rate": 1.0,
+    "average_score": {
+      "baseline": 36.5,
+      "harness": 43.5,
+      "delta": 7.0
+    },
+    "max_delta": {
+      "value": 11,
+      "case": "case-002",
+      "category": "bug-fix",
+      "favor": "harness"
+    },
+    "min_delta": {
+      "value": 2,
+      "case": "case-006",
+      "category": "research",
+      "favor": "harness"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "case-001",
+      "category": "code-generation",
+      "title": "Express TODO REST API (CRUD, 유효성검사, 에러핸들링)",
+      "baseline_total": 35,
+      "harness_total": 42,
+      "delta": 7,
+      "winner": "harness",
+      "scores": {
+        "completeness": { "baseline": 9, "harness": 8 },
+        "code_quality": { "baseline": 6, "harness": 9 },
+        "efficiency": { "baseline": 7, "harness": 8 },
+        "accuracy": { "baseline": 9, "harness": 7 },
+        "structure": { "baseline": 4, "harness": 10 }
+      }
+    },
+    {
+      "case_id": "case-002",
+      "category": "bug-fix",
+      "title": "AsyncCache 레이스 컨디션 버그 3개 수정 + 테스트",
+      "baseline_total": 34,
+      "harness_total": 45,
+      "delta": 11,
+      "winner": "harness",
+      "scores": {
+        "completeness": { "baseline": 8, "harness": 9 },
+        "code_quality": { "baseline": 6, "harness": 9 },
+        "efficiency": { "baseline": 7, "harness": 9 },
+        "accuracy": { "baseline": 8, "harness": 9 },
+        "structure": { "baseline": 5, "harness": 9 }
+      }
+    },
+    {
+      "case_id": "case-003",
+      "category": "refactoring",
+      "title": "calc() 스파게티 코드 리팩토링",
+      "baseline_total": 37,
+      "harness_total": 44,
+      "delta": 7,
+      "winner": "harness",
+      "scores": {
+        "completeness": { "baseline": 8, "harness": 9 },
+        "code_quality": { "baseline": 7, "harness": 9 },
+        "efficiency": { "baseline": 7, "harness": 8 },
+        "accuracy": { "baseline": 8, "harness": 9 },
+        "structure": { "baseline": 7, "harness": 9 }
+      }
+    },
+    {
+      "case_id": "case-004",
+      "category": "documentation",
+      "title": "datekit 라이브러리 README.md (9개 섹션, API 문서)",
+      "baseline_total": 36,
+      "harness_total": 42,
+      "delta": 6,
+      "winner": "harness",
+      "scores": {
+        "completeness": { "baseline": 9, "harness": 9 },
+        "code_quality": { "baseline": 7, "harness": 8 },
+        "efficiency": { "baseline": 7, "harness": 9 },
+        "accuracy": { "baseline": 5, "harness": 7 },
+        "structure": { "baseline": 8, "harness": 9 }
+      }
+    },
+    {
+      "case_id": "case-005",
+      "category": "complex",
+      "title": "CLI 마크다운 블로그 생성기",
+      "baseline_total": 36,
+      "harness_total": 45,
+      "delta": 9,
+      "winner": "harness",
+      "scores": {
+        "completeness": { "baseline": 8, "harness": 9 },
+        "code_quality": { "baseline": 7, "harness": 9 },
+        "efficiency": { "baseline": 7, "harness": 8 },
+        "accuracy": { "baseline": 8, "harness": 9 },
+        "structure": { "baseline": 6, "harness": 10 }
+      }
+    },
+    {
+      "case_id": "case-006",
+      "category": "research",
+      "title": "React 상태 관리 라이브러리 5개 비교 분석",
+      "baseline_total": 41,
+      "harness_total": 43,
+      "delta": 2,
+      "winner": "harness",
+      "scores": {
+        "completeness": { "baseline": 9, "harness": 9 },
+        "code_quality": { "baseline": 9, "harness": 7 },
+        "efficiency": { "baseline": 7, "harness": 9 },
+        "accuracy": { "baseline": 8, "harness": 9 },
+        "structure": { "baseline": 8, "harness": 9 }
+      }
+    }
+  ],
+  "dimension_averages": {
+    "completeness": { "baseline": 8.50, "harness": 8.83, "delta": 0.33 },
+    "code_quality": { "baseline": 7.00, "harness": 8.50, "delta": 1.50 },
+    "efficiency": { "baseline": 7.00, "harness": 8.50, "delta": 1.50 },
+    "accuracy": { "baseline": 7.67, "harness": 8.33, "delta": 0.67 },
+    "structure": { "baseline": 6.33, "harness": 9.33, "delta": 3.00 }
+  },
+  "v1_comparison": {
+    "v1_win_rate": 0.833,
+    "v2_win_rate": 1.0,
+    "v1_avg_delta": 3.7,
+    "v2_avg_delta": 7.0,
+    "delta_improvement": 3.3,
+    "key_reversal": {
+      "case": "case-004",
+      "v1_delta": -3,
+      "v2_delta": 6,
+      "change": 9,
+      "mechanism": "정확성 체크리스트 + format 토큰 17종 전수 목록을 Skills에 포함"
+    },
+    "efficiency_reversal": {
+      "v1_delta": -0.50,
+      "v2_delta": 1.50,
+      "change": 2.00,
+      "mechanism": ".claude/ 사전 구성으로 불필요한 탐색/시행착오 감소"
+    }
+  },
+  "key_findings": [
+    "Harness 100% 승률 (6/6), 1차 83.3%에서 개선",
+    "평균 Delta +7.0으로 1차 +3.7 대비 약 2배 확대",
+    "구조화(+3.00)가 최대 강점, 효율성(+1.50)이 약점에서 강점으로 역전",
+    "Case-004 역전 성공: 정확성 체크리스트/토큰 전수 목록 효과",
+    "Skills의 패턴 지시는 코드에 직접 반영됨 (높은 추적성)",
+    ".claude/ 구성은 '단순 지시' 대비 약 2배 효과 (Delta 기준)"
+  ],
+  "recommendations": {
+    "strongly_recommended": ["code-generation", "refactoring", "bug-fix", "complex"],
+    "recommended": ["research", "documentation"],
+    "conditional": [],
+    "not_recommended": []
+  },
+  "claude_config_principles": [
+    "Skills에 구체적 데이터(전수 목록, 체크리스트) 포함",
+    "Commands로 절차(분석→수정→테스트) 강제",
+    "CLAUDE.md에 아키텍처 원칙 선언",
+    "태스크 유형에 따라 Skills 초점 조정",
+    "단순 지시보다 .claude/ 파일로 구조화"
+  ]
+}

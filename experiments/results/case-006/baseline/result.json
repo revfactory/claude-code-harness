@@ -1,0 +1,15 @@
+{
+  "case_id": "case-006",
+  "condition": "baseline",
+  "files_created": [
+    "comparison.md",
+    "recommendation-guide.md",
+    "examples/redux-toolkit/TodoApp.tsx",
+    "examples/zustand/TodoApp.tsx",
+    "examples/jotai/TodoApp.tsx",
+    "examples/recoil/TodoApp.tsx",
+    "examples/valtio/TodoApp.tsx"
+  ],
+  "total_lines": 1408,
+  "approach": "사전 가이드 없이 5개 React 상태 관리 라이브러리(Redux Toolkit, Zustand, Jotai, Recoil, Valtio)를 9개 항목(핵심 개념, 코드 예제, 번들 사이즈, 학습 곡선, TypeScript, DevTools, SSR, 성능, 커뮤니티)에 걸쳐 비교 분석. 각 라이브러리별 Counter+TODO 앱 예제 코드를 TypeScript로 작성하고, 프로젝트 규모/유형별 추천 가이드를 체계적으로 정리함. Recoil의 유지보수 중단 상태를 반영하여 마이그레이션 권고 포함."
+}

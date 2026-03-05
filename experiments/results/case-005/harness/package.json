@@ -1,0 +1,16 @@
+{
+  "name": "markdown-blog-generator",
+  "version": "1.0.0",
+  "description": "마크다운 파일을 HTML 정적 사이트로 변환하는 CLI 도구",
+  "bin": {
+    "blog": "./bin/blog.js"
+  },
+  "scripts": {
+    "build": "node bin/blog.js build",
+    "new": "node bin/blog.js new",
+    "serve": "node bin/blog.js serve",
+    "test": "node tests/test-frontmatter.js && node tests/test-markdown.js && node tests/test-template.js && node tests/test-build.js"
+  },
+  "keywords": ["blog", "markdown", "static-site-generator"],
+  "license": "MIT"
+}

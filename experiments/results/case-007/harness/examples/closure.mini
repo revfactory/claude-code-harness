@@ -1,0 +1,29 @@
+// Closure examples
+
+// Counter with closure
+fn makeCounter(start) {
+  let count = start;
+  return fn() {
+    count = count + 1;
+    return count;
+  };
+}
+
+let counter = makeCounter(0);
+print(counter());
+print(counter());
+print(counter());
+
+// Accumulator
+fn makeAccumulator() {
+  let total = 0;
+  return fn(n) {
+    total = total + n;
+    return total;
+  };
+}
+
+let acc = makeAccumulator();
+print(acc(5));
+print(acc(10));
+print(acc(3));

@@ -1,0 +1,10 @@
+{
+  "case_id": "case-009",
+  "condition": "baseline",
+  "files_created": [
+    "sql-engine.js",
+    "test.js"
+  ],
+  "total_lines": 1067,
+  "approach": "Hand-rolled in-memory SQL engine with three-phase architecture: tokenizer (regex-based lexer producing typed tokens with dot/operator/keyword support), recursive-descent parser (builds AST for DDL/DML/SELECT with full clause support including JOINs and subqueries), and tree-walking executor (evaluates AST against in-memory table storage with row-level operations). Supports CREATE/DROP TABLE, INSERT, SELECT with *, columns, aliases, DISTINCT, WHERE with comparison/AND/OR/LIKE/IN/BETWEEN/IS NULL, ORDER BY with ASC/DESC, LIMIT/OFFSET, aggregate functions (COUNT/AVG/SUM/MIN/MAX), GROUP BY with HAVING, INNER/LEFT JOIN, subqueries in WHERE IN, UPDATE, and DELETE."
+}

@@ -1,0 +1,12 @@
+{
+  "name": "todo-rest-api",
+  "version": "1.0.0",
+  "description": "TODO REST API built with Express.js",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

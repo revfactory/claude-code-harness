@@ -1,0 +1,10 @@
+<div class="tags-index">
+  <h1>All Tags</h1>
+  <div class="tags-cloud">
+    {{#each tags}}
+    <a href="{{ baseUrl }}/tags/{{ name }}.html" class="tag tag-cloud-item">
+      {{ name }} ({{ count }})
+    </a>
+    {{/each}}
+  </div>
+</div>

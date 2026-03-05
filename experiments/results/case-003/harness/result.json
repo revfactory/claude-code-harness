@@ -1,0 +1,15 @@
+{
+  "case_id": "case-003",
+  "condition": "harness",
+  "files_created": [
+    "original.js",
+    "constants.js",
+    "pricingStrategies.js",
+    "calculator.js",
+    "calculator.test.js",
+    "result.json"
+  ],
+  "total_lines": 426,
+  "agents_used": 0,
+  "approach": "CLAUDE.md/skills/commands 지침에 따라 체계적 리팩토링 수행. 1) original.js에 원본 보존, 2) constants.js에 매직 넘버 상수화 (임계값, 할인율, 세율 등), 3) pricingStrategies.js에 전략 패턴 적용 (PricingStrategy/WholesalePricingStrategy/VipPricingStrategy + 팩토리), 4) calculator.js에 SRP 원칙으로 순수 함수 분리 (applyDiscount, calculateTax, applyBulkDiscount, updateHistory, calculateLineItem, calculateOrder), 5) calculator.test.js에 원본 동일성 테스트 10건 + 전략 패턴 단위 테스트 6건 + SRP 함수 단위 테스트 9건 + 경계값 테스트 6건 = 총 31건 전체 통과"
+}

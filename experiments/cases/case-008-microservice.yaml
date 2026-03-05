@@ -1,0 +1,94 @@
+id: case-008
+category: complex-system
+title: "이벤트 드리븐 마이크로서비스 주문 시스템"
+difficulty: expert
+description: |
+  이벤트 기반 마이크로서비스 아키텍처로 전자상거래 주문 처리 시스템을 구현하세요.
+  단일 Node.js 프로세스 내에서 마이크로서비스 패턴을 시뮬레이션합니다.
+
+  ## 서비스 구성 (4개)
+
+  ### 1. OrderService
+  - 주문 생성/조회/취소
+  - 주문 상태 관리: PENDING → CONFIRMED → SHIPPED → DELIVERED / CANCELLED
+  - 주문 생성 시 SAGA 오케스트레이션 시작
+
+  ### 2. InventoryService
+  - 상품 재고 관리 (reserve, release, deduct)
+  - 동시 주문 시 재고 충돌 방지 (낙관적 잠금)
+  - 재고 부족 시 보상 트랜잭션 발생
+
+  ### 3. PaymentService
+  - 결제 처리 (charge, refund)
+  - 결제 실패 시뮬레이션 (특정 금액 초과 시 실패)
+  - 멱등성 보장 (동일 주문에 대한 중복 결제 방지)
+
+  ### 4. NotificationService
+  - 이벤트 기반 알림 (주문 확인, 배송, 취소)
+  - 알림 이력 저장
+
+  ## 이벤트 버스 (In-memory)
+  ```javascript
+  // EventBus API
+  eventBus.publish('order.created', { orderId, items, totalAmount });
+  eventBus.subscribe('order.created', handler);
+  eventBus.subscribeOnce('payment.completed', handler);
+  ```
+
+  ## SAGA 패턴 (주문 생성 플로우)
+  ```
+  1. OrderService: 주문 생성 → order.created
+  2. InventoryService: 재고 예약 → inventory.reserved | inventory.failed
+  3. PaymentService: 결제 처리 → payment.completed | payment.failed
+  4. OrderService: 주문 확정 → order.confirmed
+
+  실패 시 보상 트랜잭션:
+  - payment.failed → InventoryService: 재고 해제 → OrderService: 주문 취소
+  - inventory.failed → OrderService: 주문 취소
+  ```
+
+  ## 구현 요구사항
+  1. **EventBus**: publish/subscribe, 와일드카드 구독(order.*), 비동기 핸들러
+  2. **SAGA Orchestrator**: 단계별 실행, 실패 시 보상 트랜잭션, 타임아웃
+  3. **서비스 간 격리**: 각 서비스는 자체 상태만 관리, 이벤트로만 통신
+  4. **에러 복구**: 부분 실패 시 일관성 보장
+  5. **동시성 처리**: 동일 상품에 대한 동시 주문 처리
+  6. **테스트 시나리오**:
+     - 정상 주문 플로우 (주문→재고예약→결제→확정)
+     - 재고 부족 시 보상 (주문→재고실패→취소)
+     - 결제 실패 시 보상 (주문→재고예약→결제실패→재고해제→취소)
+     - 동시 주문 경쟁 조건
+     - 타임아웃 처리
+  7. **로깅**: 이벤트 흐름 추적을 위한 correlation ID 기반 로깅
+
+  ## 검증
+  ```javascript
+  // 시나리오 1: 정상 주문
+  const order = await orderService.createOrder({
+    customerId: 'c1',
+    items: [{ productId: 'p1', quantity: 2 }]
+  });
+  // order.status === 'CONFIRMED'
+  // inventory.p1 -= 2
+  // payment charged
+
+  // 시나리오 2: 결제 실패 → 보상
+  const order2 = await orderService.createOrder({
+    customerId: 'c2',
+    items: [{ productId: 'p1', quantity: 1 }],
+    totalAmount: 999999 // 금액 초과 → 결제 실패
+  });
+  // order2.status === 'CANCELLED'
+  // inventory.p1 원복
+  // 환불 처리됨
+  ```
+expected_outputs:
+  - "EventBus 구현"
+  - "4개 서비스 구현"
+  - "SAGA Orchestrator"
+  - "통합 테스트"
+evaluation_criteria:
+  completeness: "4개 서비스 + EventBus + SAGA + 5개 테스트 시나리오"
+  quality: "서비스 격리, 이벤트 흐름, 보상 트랜잭션"
+  correctness: "실패 시 일관성 보장, 동시성 처리"
+  efficiency: "과도한 추상화 없이 패턴 구현"

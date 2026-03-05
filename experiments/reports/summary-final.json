@@ -1,0 +1,108 @@
+{
+  "report_date": "2026-03-05",
+  "experiment": "Claude Code Harness A/B Test",
+  "conditions": {
+    "baseline": "순수 Claude Code (사전 설정 없음)",
+    "harness": ".claude/ 사전 구성 (CLAUDE.md + Skills + Commands)"
+  },
+  "total_cases": 10,
+  "win_rate": "10/10 (100%)",
+  "overall": {
+    "baseline_avg": 36.2,
+    "harness_avg": 43.7,
+    "delta_avg": 7.5,
+    "max_score": 50
+  },
+  "by_difficulty": {
+    "basic": {
+      "cases": ["001", "002", "003", "004", "005", "006"],
+      "count": 6,
+      "baseline_avg": 36.5,
+      "harness_avg": 43.5,
+      "delta_avg": 7.0
+    },
+    "advanced": {
+      "cases": ["007", "008", "009", "010"],
+      "count": 4,
+      "baseline_avg": 35.75,
+      "harness_avg": 44.0,
+      "delta_avg": 8.25
+    }
+  },
+  "case_results": [
+    { "case_id": "001", "category": "코드 생성", "difficulty": "basic", "title": "Express TODO REST API", "baseline": 35, "harness": 42, "delta": 7 },
+    { "case_id": "002", "category": "버그 수정", "difficulty": "basic", "title": "AsyncCache 레이스 컨디션", "baseline": 34, "harness": 45, "delta": 11 },
+    { "case_id": "003", "category": "리팩토링", "difficulty": "basic", "title": "calc() 스파게티 코드 리팩토링", "baseline": 37, "harness": 44, "delta": 7 },
+    { "case_id": "004", "category": "문서 작성", "difficulty": "basic", "title": "datekit 라이브러리 README", "baseline": 36, "harness": 42, "delta": 6 },
+    { "case_id": "005", "category": "복합 태스크", "difficulty": "basic", "title": "CLI 마크다운 블로그 생성기", "baseline": 36, "harness": 45, "delta": 9 },
+    { "case_id": "006", "category": "리서치", "difficulty": "basic", "title": "React 상태 관리 라이브러리 비교", "baseline": 41, "harness": 43, "delta": 2 },
+    { "case_id": "007", "category": "복합 시스템", "difficulty": "advanced", "title": "MiniLang 인터프리터 (Lexer→Parser→AST→Evaluator)", "baseline": 39, "harness": 44, "delta": 5 },
+    { "case_id": "008", "category": "복합 시스템", "difficulty": "advanced", "title": "이벤트 드리븐 마이크로서비스 주문 시스템 (SAGA)", "baseline": 36, "harness": 43, "delta": 7 },
+    { "case_id": "009", "category": "복합 시스템", "difficulty": "advanced", "title": "인메모리 SQL 쿼리 엔진 (Parser→Planner→Executor)", "baseline": 34, "harness": 45, "delta": 11 },
+    { "case_id": "010", "category": "복합 시스템", "difficulty": "advanced", "title": "CRDT 실시간 협업 텍스트 에디터 (RGA)", "baseline": 34, "harness": 44, "delta": 10 }
+  ],
+  "dimension_analysis": {
+    "overall": {
+      "completeness":  { "baseline": 8.50, "harness": 8.90, "delta": 0.40 },
+      "code_quality":  { "baseline": 6.90, "harness": 8.70, "delta": 1.80 },
+      "efficiency":    { "baseline": 7.00, "harness": 8.30, "delta": 1.30 },
+      "correctness":   { "baseline": 7.80, "harness": 8.50, "delta": 0.70 },
+      "structure":     { "baseline": 6.00, "harness": 9.30, "delta": 3.30 }
+    },
+    "basic": {
+      "completeness":  { "baseline": 8.50, "harness": 8.83, "delta": 0.33 },
+      "code_quality":  { "baseline": 7.00, "harness": 8.50, "delta": 1.50 },
+      "efficiency":    { "baseline": 7.00, "harness": 8.50, "delta": 1.50 },
+      "correctness":   { "baseline": 7.67, "harness": 8.33, "delta": 0.67 },
+      "structure":     { "baseline": 6.33, "harness": 9.33, "delta": 3.00 }
+    },
+    "advanced": {
+      "completeness":  { "baseline": 8.50, "harness": 9.00, "delta": 0.50 },
+      "code_quality":  { "baseline": 6.75, "harness": 9.00, "delta": 2.25 },
+      "efficiency":    { "baseline": 7.00, "harness": 8.00, "delta": 1.00 },
+      "correctness":   { "baseline": 8.00, "harness": 8.75, "delta": 0.75 },
+      "structure":     { "baseline": 5.50, "harness": 9.25, "delta": 3.75 }
+    }
+  },
+  "advanced_case_dimensions": {
+    "case_007": {
+      "completeness":  { "baseline": 9, "harness": 9 },
+      "code_quality":  { "baseline": 7, "harness": 9 },
+      "efficiency":    { "baseline": 8, "harness": 8 },
+      "correctness":   { "baseline": 9, "harness": 9 },
+      "structure":     { "baseline": 6, "harness": 9 }
+    },
+    "case_008": {
+      "completeness":  { "baseline": 9, "harness": 9 },
+      "code_quality":  { "baseline": 7, "harness": 9 },
+      "efficiency":    { "baseline": 7, "harness": 8 },
+      "correctness":   { "baseline": 8, "harness": 8 },
+      "structure":     { "baseline": 5, "harness": 9 }
+    },
+    "case_009": {
+      "completeness":  { "baseline": 8, "harness": 9 },
+      "code_quality":  { "baseline": 6, "harness": 9 },
+      "efficiency":    { "baseline": 7, "harness": 8 },
+      "correctness":   { "baseline": 8, "harness": 9 },
+      "structure":     { "baseline": 5, "harness": 10 }
+    },
+    "case_010": {
+      "completeness":  { "baseline": 8, "harness": 9 },
+      "code_quality":  { "baseline": 7, "harness": 9 },
+      "efficiency":    { "baseline": 6, "harness": 8 },
+      "correctness":   { "baseline": 7, "harness": 9 },
+      "structure":     { "baseline": 6, "harness": 9 }
+    }
+  },
+  "key_findings": [
+    "10전 10승 (승률 100%), 평균 Delta +7.5",
+    "고난이도에서 효과 증폭: 기본 +7.0 vs 고난이도 +8.25",
+    "구조화(Structure)가 일관된 최대 강점: Delta +3.30 (고난이도 +3.75)",
+    "코드 품질이 두 번째 강점: Delta +1.80 (고난이도 +2.25)",
+    "완성도는 양측 모두 높아 격차 최소: Delta +0.40",
+    "Skills를 통한 고급 패턴 직접 전이: Pratt Parser, SAGA, SQL Planner, CRDT RGA",
+    "Baseline은 고난이도에서 단일 파일 모놀리식 경향 심화 (구조화 평균 5.50)",
+    "복잡한 프로젝트일수록 .claude/ 사전 구성의 가치가 커짐"
+  ],
+  "conclusion": "Harness(.claude/ 사전 구성)는 모든 케이스에서 Baseline을 상회하며, 특히 복잡한 시스템 설계 태스크에서 효과가 극대화된다. 구조화와 코드 품질이 가장 큰 수혜 차원이며, Skills를 통한 도메인 특화 패턴의 코드 전이가 고난이도에서 결정적 차이를 만든다."
+}

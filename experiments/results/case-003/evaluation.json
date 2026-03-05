@@ -1,0 +1,55 @@
+{
+  "case_id": "case-003",
+  "task": "calc() 스파게티 코드 리팩토링 (변수명, SRP, 상수, 전략패턴, 테스트)",
+  "evaluation_date": "2026-03-05",
+  "baseline": {
+    "completeness": 8,
+    "code_quality": 7,
+    "efficiency": 7,
+    "accuracy": 8,
+    "structure": 7,
+    "total": 37,
+    "summary": "기능 요구사항(변수명, SRP, 상수 추출, 전략 패턴, 테스트)을 모두 충족. 전략 패턴을 함수 기반으로 구현하여 간결하지만, GoF 전략 패턴의 정석적 클래스 구조 대비 다소 단순. 테스트 17건은 통합+단위를 커버하나 경계값 테스트가 부재. 테스트 프레임워크 없이 수동 boolean 비교 방식으로 검증 신뢰도가 약간 낮음. 상수를 개별 export하여 명확하지만 그룹핑이 없어 확장성 측면에서 약간 부족."
+  },
+  "harness": {
+    "completeness": 9,
+    "code_quality": 9,
+    "efficiency": 8,
+    "accuracy": 9,
+    "structure": 9,
+    "total": 44,
+    "summary": "태스크의 모든 요구사항을 높은 수준으로 충족. 전략 패턴을 클래스 기반 상속 구조(PricingStrategy -> WholesalePricingStrategy, VipPricingStrategy)로 구현하여 정석적 GoF 패턴에 부합. 팩토리 함수(createPricingStrategy) 포함. 상수를 ORDER_CONSTANTS 객체로 그룹핑하고 PERCENT_DIVISOR까지 상수화하여 매직 넘버를 철저히 제거. 테스트 31건으로 통합(10) + 전략 패턴 단위(6) + SRP 함수 단위(9) + 경계값(6) 네 계층으로 체계화. assertClose 유틸리티로 부동소수점 비교를 안전하게 처리. for...of 루프 사용으로 현대적 코드 스타일. JSDoc 주석이 모든 함수에 일관되게 적용."
+  },
+  "criteria_details": {
+    "completeness": {
+      "baseline": "8 - 5가지 요구사항(변수명, SRP, 상수, 전략패턴, 테스트) 모두 수행했으나 테스트 커버리지가 상대적으로 낮음(17건)",
+      "harness": "9 - 5가지 요구사항을 모두 높은 완성도로 수행. 테스트 31건으로 경계값까지 포함한 포괄적 검증"
+    },
+    "code_quality": {
+      "baseline": "7 - 깔끔한 코드이나 함수형 전략 패턴이 확장성 측면에서 제한적. 테스트에서 수동 boolean 비교 사용",
+      "harness": "9 - 클래스 기반 전략 패턴으로 OCP(개방-폐쇄 원칙) 준수. assertClose로 부동소수점 안전 비교. JSDoc 일관 적용. for...of 등 현대적 문법"
+    },
+    "efficiency": {
+      "baseline": "7 - 직관적이고 간결한 구현. 불필요한 복잡도 없음",
+      "harness": "8 - 클래스 인스턴스 생성 비용은 미미. PERCENT_DIVISOR 상수화는 약간 과도하나 일관성 기여. 전체적으로 효율적"
+    },
+    "accuracy": {
+      "baseline": "8 - 원본과 동일 입출력 검증 완료. 12개 통합 테스트로 정확성 확인",
+      "harness": "9 - 원본 동일 입출력 검증 + 경계값 6건(qty=50/51/100/101, grandTotal=10000/10001)으로 엣지 케이스까지 정밀 검증. assertClose로 부동소수점 오차 안전 처리"
+    },
+    "structure": {
+      "baseline": "7 - 3파일 모듈 분리(constants, pricingStrategies, calculator) 적절. 개별 상수 export로 단순하지만 그룹핑 부재",
+      "harness": "9 - 동일한 3파일 구조에 ORDER_CONSTANTS 객체 그룹핑. 클래스 계층 구조로 전략 패턴 정석 구현. 테스트가 4개 섹션으로 체계적 분류"
+    }
+  },
+  "winner": "harness",
+  "score_difference": 7,
+  "key_differences": [
+    "전략 패턴: Baseline은 함수 기반(간결), Harness는 클래스 상속 기반(정석 GoF, 확장 용이)",
+    "테스트 규모: Baseline 17건 vs Harness 31건 (경계값 테스트 6건 추가)",
+    "테스트 품질: Harness는 assertClose(부동소수점), 체계적 test runner, 4계층 분류 적용",
+    "상수 관리: Baseline은 개별 export, Harness는 ORDER_CONSTANTS 객체 그룹핑 + PERCENT_DIVISOR 상수화",
+    "코드 스타일: Harness가 for...of, JSDoc 일관성 등에서 현대적"
+  ],
+  "harness_advantage_from_config": "CLAUDE.md의 리팩토링 원칙(SRP, DRY, 전략 패턴), refactoring-patterns 스킬(전략 패턴 가이드), refactor 커맨드의 사전 구성이 클래스 기반 전략 패턴 적용, 체계적 테스트 계층화, 경계값 테스트 포함 등 구조화된 접근을 유도한 것으로 판단됨"
+}

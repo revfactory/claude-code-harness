@@ -1,0 +1,79 @@
+// MiniLang map/filter 고차함수 + 익명 함수 검증 프로그램
+
+// map 고차함수: 배열의 각 요소에 함수를 적용
+fn map(arr, f) {
+  let result = [];
+  let i = 0;
+  while (i < len(arr)) {
+    push(result, f(arr[i]));
+    i = i + 1;
+  }
+  return result;
+}
+
+// filter 고차함수: 조건을 만족하는 요소만 추출
+fn filter(arr, pred) {
+  let result = [];
+  let i = 0;
+  while (i < len(arr)) {
+    if (pred(arr[i])) {
+      push(result, arr[i]);
+    }
+    i = i + 1;
+  }
+  return result;
+}
+
+// reduce 고차함수
+fn reduce(arr, f, init) {
+  let acc = init;
+  let i = 0;
+  while (i < len(arr)) {
+    acc = f(acc, arr[i]);
+    i = i + 1;
+  }
+  return acc;
+}
+
+// 테스트 데이터
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+// 익명 함수로 map: 각 요소를 제곱
+let squared = map(numbers, fn(x) { return x * x; });
+print("squared:", squared);
+
+// 익명 함수로 filter: 짝수만
+let evens = filter(numbers, fn(x) { return x % 2 == 0; });
+print("evens:", evens);
+
+// map + filter 조합: 짝수의 제곱
+let evenSquared = map(filter(numbers, fn(x) { return x % 2 == 0; }), fn(x) { return x * x; });
+print("even squared:", evenSquared);
+
+// reduce로 합계
+let sum = reduce(numbers, fn(acc, x) { return acc + x; }, 0);
+print("sum:", sum);
+
+// 클로저를 이용한 multiplier 팩토리
+fn makeMultiplier(factor) {
+  return fn(x) { return x * factor; };
+}
+
+let double = makeMultiplier(2);
+let triple = makeMultiplier(3);
+
+let doubled = map(numbers, double);
+let tripled = map(numbers, triple);
+print("doubled:", doubled);
+print("tripled:", tripled);
+
+// 함수 합성
+fn compose(f, g) {
+  return fn(x) { return f(g(x)); };
+}
+
+let doubleThenSquare = compose(fn(x) { return x * x; }, double);
+let composed = map([1, 2, 3], doubleThenSquare);
+print("double then square:", composed);
+
+print("done!");

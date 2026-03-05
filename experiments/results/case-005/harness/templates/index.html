@@ -1,0 +1,21 @@
+<div class="posts-list">
+  <h1>All Posts</h1>
+  {{#each posts}}
+  <article class="post-summary">
+    <h2><a href="{{ baseUrl }}/posts/{{ slug }}.html">{{ title }}</a></h2>
+    <div class="post-meta">
+      <time>{{ date }}</time>
+      {{#if tags}}
+      <div class="post-tags">
+        {{#each tags}}
+        <a href="{{ baseUrl }}/tags/{{ this }}.html" class="tag">{{ this }}</a>
+        {{/each}}
+      </div>
+      {{/if}}
+    </div>
+    {{#if description}}
+    <p class="post-description">{{ description }}</p>
+    {{/if}}
+  </article>
+  {{/each}}
+</div>

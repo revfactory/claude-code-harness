@@ -1,0 +1,11 @@
+{
+  "case_id": "case-001",
+  "condition": "baseline",
+  "files_created": [
+    "package.json",
+    "app.js",
+    "test.js"
+  ],
+  "total_lines": 241,
+  "approach": "Node.js + Express REST API with in-memory array storage. Single app.js file containing all CRUD endpoints (GET/POST/PUT/DELETE /todos), input validation (title required, non-empty string), proper HTTP status codes (200/201/400/404), and error handling middleware. Test file with 20 assertions covering all endpoints, validation, and edge cases. No external dependencies beyond Express."
+}

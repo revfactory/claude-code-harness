@@ -1,0 +1,38 @@
+id: case-006
+category: research
+title: "상태 관리 라이브러리 기술 비교 분석"
+difficulty: medium
+description: |
+  React 생태계의 주요 상태 관리 라이브러리를 비교 분석하는 기술 문서를 작성하세요.
+
+  비교 대상:
+  1. Redux Toolkit
+  2. Zustand
+  3. Jotai
+  4. Recoil
+  5. Valtio
+
+  분석 항목:
+  1. 핵심 개념 및 멘탈 모델
+  2. 코드 예제 (동일한 카운터 + TODO 앱)
+  3. 번들 사이즈 비교
+  4. 학습 곡선
+  5. TypeScript 지원도
+  6. DevTools 지원
+  7. 서버 사이드 렌더링 호환성
+  8. 성능 특성 (리렌더링 최적화)
+  9. 커뮤니티 규모 및 생태계
+
+  출력물:
+  - 비교 분석 문서 (comparison.md)
+  - 각 라이브러리별 동일한 TODO 앱 예제 코드
+  - 추천 가이드 (프로젝트 규모/유형별)
+expected_outputs:
+  - "comparison.md"
+  - "각 라이브러리별 예제 코드"
+  - "recommendation-guide.md"
+evaluation_criteria:
+  completeness: "5개 라이브러리 x 9개 분석 항목"
+  quality: "공정한 비교, 실용적 관점, 코드 예제 품질"
+  correctness: "기술적으로 정확한 정보"
+  efficiency: "핵심에 집중하면서 충분한 깊이"

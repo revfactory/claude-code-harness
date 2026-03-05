@@ -1,0 +1,41 @@
+id: case-005
+category: complex
+title: "CLI 기반 마크다운 블로그 생성기"
+difficulty: hard
+description: |
+  마크다운 파일을 HTML 정적 사이트로 변환하는 CLI 도구를 만드세요.
+
+  필수 기능:
+  1. CLI 인터페이스:
+     - `blog build` - 마크다운 파일들을 HTML로 변환
+     - `blog new <title>` - 새 블로그 포스트 템플릿 생성
+     - `blog serve` - 로컬 개발 서버 실행 (선택적)
+
+  2. 마크다운 처리:
+     - YAML frontmatter 파싱 (title, date, tags, description)
+     - 마크다운 -> HTML 변환
+     - 코드 블록 하이라이팅 지원
+
+  3. 사이트 생성:
+     - 인덱스 페이지 (포스트 목록, 날짜순 정렬)
+     - 개별 포스트 페이지
+     - 태그별 필터링 페이지
+     - 기본 HTML 템플릿 (깔끔한 디자인)
+
+  4. 프로젝트 구조:
+     - posts/ - 마크다운 파일 위치
+     - dist/ - 빌드 출력
+     - templates/ - HTML 템플릿
+
+  기술 스택: Node.js, 외부 라이브러리 최소화
+expected_outputs:
+  - "CLI 엔트리포인트 (bin/)"
+  - "마크다운 파서"
+  - "HTML 생성기"
+  - "템플릿 파일"
+  - "package.json"
+evaluation_criteria:
+  completeness: "4개 필수 기능 모두 구현"
+  quality: "모듈 분리, 확장 가능한 구조"
+  correctness: "마크다운이 올바르게 HTML로 변환되는가"
+  efficiency: "적절한 수준의 기능과 복잡도"

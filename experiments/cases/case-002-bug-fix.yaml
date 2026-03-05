@@ -1,0 +1,53 @@
+id: case-002
+category: bug-fix
+title: "비동기 레이스 컨디션 버그 수정"
+difficulty: hard
+description: |
+  아래 코드에 레이스 컨디션 버그가 있습니다. 찾아서 수정하세요.
+
+  ```javascript
+  // buggy-cache.js
+  class AsyncCache {
+    constructor() {
+      this.cache = new Map();
+      this.pending = new Map();
+    }
+
+    async get(key, fetchFn) {
+      if (this.cache.has(key)) {
+        return this.cache.get(key);
+      }
+
+      // Bug: 동시에 같은 key를 요청하면 fetchFn이 여러 번 실행됨
+      const value = await fetchFn(key);
+      this.cache.set(key, value);
+      return value;
+    }
+
+    invalidate(key) {
+      this.cache.delete(key);
+    }
+
+    async refresh(key, fetchFn) {
+      // Bug: refresh 중에 get을 호출하면 오래된 값을 반환할 수 있음
+      this.cache.delete(key);
+      const value = await fetchFn(key);
+      this.cache.set(key, value);
+      return value;
+    }
+  }
+  ```
+
+  수정해야 할 사항:
+  1. 동일 key에 대한 동시 요청 시 fetchFn이 한 번만 실행되도록 수정
+  2. refresh 중 get 요청이 새 값을 기다리도록 수정
+  3. 에러 발생 시 pending 상태가 정리되도록 수정
+  4. 수정된 코드와 함께 테스트 코드를 작성하세요
+expected_outputs:
+  - "수정된 async-cache.js"
+  - "테스트 파일"
+evaluation_criteria:
+  completeness: "3가지 버그 모두 수정 + 테스트 코드"
+  quality: "깔끔한 Promise 핸들링, 명확한 상태 관리"
+  correctness: "레이스 컨디션이 실제로 해결되었는가"
+  efficiency: "최소한의 변경으로 버그 수정"

@@ -1,0 +1,13 @@
+{
+  "name": "todo-api",
+  "version": "1.0.0",
+  "description": "TODO Management REST API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

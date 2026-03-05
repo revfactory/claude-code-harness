@@ -1,0 +1,23 @@
+{
+  "case_id": "case-009",
+  "condition": "harness",
+  "files_created": [
+    "src/lexer.js",
+    "src/ast.js",
+    "src/parser.js",
+    "src/storage.js",
+    "src/expression.js",
+    "src/aggregator.js",
+    "src/planner.js",
+    "src/executor.js",
+    "src/formatter.js",
+    "src/repl.js",
+    "src/index.js",
+    "tests/parser.test.js",
+    "tests/executor.test.js",
+    "tests/integration.test.js"
+  ],
+  "total_lines": 2760,
+  "agents_used": 0,
+  "approach": "3-stage pipeline (Parser->Planner->Executor) with recursive-descent SQL parser producing AST nodes, query planner generating logical execution plans (SeqScan->Filter->Join->Aggregate->Project->Sort->Limit), and tree-walking executor. Expression evaluator handles WHERE predicates with SQL 3-value NULL logic. Supports DDL (CREATE/DROP TABLE), DML (INSERT/UPDATE/DELETE), and full SELECT (WHERE with AND/OR/IN/BETWEEN/LIKE/IS NULL, JOIN inner/left via nested loop, GROUP BY + HAVING with COUNT/AVG/SUM/MIN/MAX aggregates, ORDER BY, LIMIT/OFFSET, DISTINCT, subqueries in WHERE IN). All 67 tests pass including 7 integration validation queries."
+}

@@ -1,0 +1,12 @@
+{
+  "name": "event-driven-order-system",
+  "version": "1.0.0",
+  "description": "이벤트 드리븐 마이크로서비스 주문 시스템 - SAGA 패턴",
+  "scripts": {
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

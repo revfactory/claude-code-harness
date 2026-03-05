@@ -1,0 +1,30 @@
+{
+  "case_id": "case-005",
+  "condition": "harness",
+  "files_created": [
+    "bin/blog.js",
+    "package.json",
+    "posts/hello-world.md",
+    "posts/javascript-tips.md",
+    "posts/python-basics.md",
+    "src/builder.js",
+    "src/frontmatter.js",
+    "src/highlight.js",
+    "src/markdown.js",
+    "src/new-post.js",
+    "src/server.js",
+    "src/template.js",
+    "templates/index.html",
+    "templates/layout.html",
+    "templates/post.html",
+    "templates/tag.html",
+    "templates/tags-index.html",
+    "tests/test-build.js",
+    "tests/test-frontmatter.js",
+    "tests/test-markdown.js",
+    "tests/test-template.js"
+  ],
+  "total_lines": 1377,
+  "agents_used": 0,
+  "approach": "CLAUDE.md, skills, commands 지침을 따라 모듈별 순차 구현. frontmatter/markdown/highlight/template 독립 모듈 구현 후 builder에서 조합. 중첩 가능한 템플릿 엔진(each/if/else/변수치환), 11가지 마크다운 문법 변환, 코드 하이라이팅, 반응형 CSS 포함. CLI(build/new/serve), 샘플 포스트 3개, 단위+통합 테스트 54개 전체 통과. 외부 의존성 0개, 순수 Node.js."
+}
