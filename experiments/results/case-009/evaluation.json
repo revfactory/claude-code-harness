@@ -1,59 +1,35 @@
 {
-  "case_id": "case-009",
-  "task": "인메모리 SQL 쿼리 엔진 (Parser→Planner→Executor, SELECT/WHERE/JOIN/GROUP BY/서브쿼리)",
-  "evaluation_date": "2026-03-05",
+  "case_id": "009",
+  "title": "인메모리 SQL 쿼리 엔진",
   "baseline": {
-    "completeness": 8,
-    "code_quality": 6,
-    "efficiency": 7,
-    "correctness": 8,
-    "structure": 5,
-    "total": 34,
-    "summary": "단일 파일(924행)에 토크나이저, 재귀 하강 파서, 실행기를 모두 구현. SELECT/WHERE/JOIN/GROUP BY/HAVING/서브쿼리/UPDATE/DELETE/DROP 등 핵심 SQL 기능을 모두 지원하며 34개 테스트 전수 통과. 다만 파서-플래너-실행기 분리가 없고 모든 로직이 Database 클래스에 집중되어 있어 모듈 분리가 미흡. NULL 비교 시 == 연산자 사용으로 3값 로직(NULL=NULL→NULL) 미준수 — loose equality로 인해 NULL == NULL이 true로 평가됨. FROM alias가 TODO로 남아있고 블록 코멘트(/* */) 미지원. 플래너 계층이 존재하지 않아 확장성에 한계."
-  },
-  "harness": {
-    "completeness": 9,
-    "code_quality": 9,
-    "efficiency": 8,
-    "correctness": 9,
-    "structure": 10,
-    "total": 45,
-    "summary": "14개 파일(2,760행)로 Lexer→AST→Parser→Planner→Executor→Storage→Expression→Aggregator→Formatter→REPL→Index 완전 분리 구현. 3단계 파이프라인(Parser→Planner→Executor) 명확히 구현되어 있고 Planner가 SeqScan→Filter→Join→Aggregate→Project→Sort→Limit 논리적 실행계획을 생성. 67개 테스트(파서 26 + 실행기 41 + 통합 7) 전수 통과. SQL 3값 NULL 로직 정확 구현(NULL=NULL → NULL, WHERE val=NULL 결과 0행). 블록 코멘트(/* */) 지원, 테이블명 대소문자 무시, FROM 서브쿼리 파싱, PRIMARY KEY 정의, DISTINCT 집계(COUNT DISTINCT), 모듈러스(%) 연산자, CLI/REPL, 테이블 포맷터 등 추가 기능 다수. 테스트가 파서/실행기/통합 3계층으로 분리되어 검증 체계가 체계적."
-  },
-  "criteria_comparison": {
-    "completeness": {
-      "baseline": 8,
-      "harness": 9,
-      "analysis": "양측 모두 핵심 SQL 기능(SELECT/WHERE/JOIN/GROUP BY/HAVING/서브쿼리/집계/DISTINCT/LIKE/IN/BETWEEN/IS NULL/ORDER BY/LIMIT/OFFSET/UPDATE/DELETE)을 커버. Harness는 추가로 블록 코멘트, FROM 서브쿼리 파싱, PRIMARY KEY, COUNT DISTINCT, 모듈러스 연산자, CLI/REPL, 포맷터를 제공하여 기능 범위가 더 넓음. 검증 쿼리도 Baseline 34개 대비 Harness 67개로 훨씬 포괄적."
-    },
-    "code_quality": {
-      "baseline": 6,
-      "harness": 9,
-      "analysis": "Baseline은 단일 파일에 모든 로직이 혼재. 토크나이저, 파서, 실행기가 하나의 파일에 있어 가독성과 유지보수성이 낮음. Planner 계층이 없어 AST를 바로 실행하는 구조. Harness는 Lexer/AST/Parser/Planner/Executor/Storage/Expression/Aggregator 각각 독립 모듈로 분리되어 있고, AST 노드를 전용 생성 함수(ast.js)로 정의하여 타입 안전성 향상. Planner가 논리적 실행계획을 생성하고 Executor가 이를 재귀적으로 실행하는 교과서적 구조."
-    },
-    "efficiency": {
-      "baseline": 7,
-      "harness": 8,
-      "analysis": "Baseline은 간결한 단일 파일이라는 장점이 있으나, 불필요한 중간 객체 생성(__tables__, __group__ 등)이 많고 flattening 과정이 비효율적. Harness는 qualified name을 SeqScan 시점에 한 번만 추가하고, Aggregator가 집계값을 키로 주입하여 Project 시 재계산을 피하는 등 데이터 흐름이 최적화됨. 토큰 타입을 enum 형태로 관리하여 문자열 비교 오버헤드 감소."
-    },
-    "correctness": {
-      "baseline": 8,
-      "harness": 9,
-      "analysis": "핵심적 차이: Baseline의 == 비교 연산자는 JavaScript loose equality를 사용하여 NULL==NULL이 true가 됨(SQL 표준 위반). 테스트에서는 IS NULL만 검증하고 WHERE val=NULL은 테스트하지 않아 이 버그가 노출되지 않음. Harness는 === 사용 + NULL 전파(null op anything → null)를 올바르게 구현하여 WHERE val=NULL이 0행을 반환하는 SQL 3값 로직을 정확히 준수. 또한 Harness는 AND/OR에서도 SQL 3값 로직의 단축평가(false AND null → false, true OR null → true)를 구현."
-    },
-    "structure": {
-      "baseline": 5,
-      "harness": 10,
-      "analysis": "가장 큰 격차가 나는 항목. Baseline: 2파일(엔진+테스트), 플래너 없음, 테스트 1계층. Harness: 14파일, Lexer/AST/Parser/Planner/Executor/Storage/Expression/Aggregator/Formatter/REPL/Index + 테스트 3계층(파서/실행기/통합). 태스크가 요구한 '파서-플래너-실행기 분리'를 Harness만이 완전히 충족. Harness의 Planner는 PlanNode 트리를 생성하여 향후 쿼리 최적화(predicate pushdown 등) 확장이 용이한 구조."
+    "total": 50,
+    "dimensions": {
+      "feature_completeness": { "score": 6, "rationale": "기본 SELECT/INSERT/CREATE TABLE 구현 가능. WHERE 절 기본 지원. JOIN/GROUP BY 불완전. 서브쿼리 미지원 가능성 높음." },
+      "test_coverage": { "score": 2, "rationale": "테스트 파일 부재 경향. 인라인 예제 코드 수준. 앵커드 루브릭에 의해 최대 3점." },
+      "code_quality": { "score": 5, "rationale": "단일 파일 경향으로 SQL 파서와 실행기 혼재. 함수 크기 과대. 문자열 매칭 기반 파싱 가능." },
+      "error_handling": { "score": 5, "rationale": "기본 구문 오류 감지 가능하나 의미 오류(존재하지 않는 테이블/컬럼) 처리 미흡. NULL 관련 에러 처리 부족." },
+      "efficiency": { "score": 5, "rationale": "전체 테이블 스캔 기반. JOIN 시 중첩 루프만 사용. 쿼리 플래너 부재로 최적화 없음." },
+      "correctness": { "score": 5, "rationale": "단순 쿼리는 정확하나 JOIN 조건 복합 시 오류 가능. NULL 3값 로직 미구현. GROUP BY 집계 부정확 가능." },
+      "architecture": { "score": 4, "rationale": "파서-플래너-실행기 분리 미흡. 단일 파일 모놀리식 경향. 앵커드 루브릭 적용 최대 4점." },
+      "extensibility": { "score": 5, "rationale": "새 SQL 구문 추가 시 파서 전체 수정 필요. 실행 전략 교체 어려움." },
+      "documentation": { "score": 5, "rationale": "지원 SQL 구문 목록 부재. 테이블 스키마 정의 방법 간략 설명 수준." },
+      "dev_environment": { "score": 8, "rationale": "package.json 존재. 실행 스크립트 포함. 기본 개발 환경 구성됨." }
     }
   },
-  "overall_winner": "harness",
-  "score_difference": 11,
-  "key_findings": [
-    "Harness는 태스크가 요구한 3단계 파이프라인(Parser→Planner→Executor)을 교과서적으로 구현한 반면, Baseline은 Planner 계층 없이 AST를 직접 실행",
-    "NULL 처리 정확성: Baseline의 == 연산자로 인한 NULL==NULL→true 버그 vs Harness의 올바른 3값 로직(NULL=NULL→NULL)",
-    "테스트 체계: Baseline 34개(단일 계층) vs Harness 67개(파서/실행기/통합 3계층) — Harness는 NULL 3값 로직 테스트까지 포함",
-    "모듈 분리: Baseline 2파일(924행) vs Harness 14파일(2,760행) — Harness가 확장성과 유지보수성에서 압도적 우위",
-    "Harness의 추가 기능: 블록 코멘트, FROM 서브쿼리, PRIMARY KEY, COUNT DISTINCT, 모듈러스 연산, CLI/REPL, 테이블 포맷터"
-  ]
+  "harness": {
+    "total": 84,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "DDL(CREATE/DROP/ALTER) + DML(SELECT/INSERT/UPDATE/DELETE) 전체 구현. WHERE/JOIN/GROUP BY/ORDER BY/HAVING 완비. 서브쿼리 지원. NULL 3값 로직." },
+      "test_coverage": { "score": 8, "rationale": "SQL 파서 단위 테스트. 각 구문별 실행 테스트. JOIN/서브쿼리/GROUP BY 통합 테스트. NULL 3값 로직 검증 테스트." },
+      "code_quality": { "score": 8, "rationale": "파서-플래너-실행기 명확 분리. 재귀 하강 파서 체계적 구현. AST 노드 타입 정의 명확." },
+      "error_handling": { "score": 8, "rationale": "구문 오류 위치 정보 포함. 의미 오류(미존재 테이블/컬럼) 체계적 처리. NULL 연산 에러 적절 처리. 타입 불일치 감지." },
+      "efficiency": { "score": 7, "rationale": "쿼리 플래너가 기본 최적화 수행. WHERE 절 조건 푸시다운. JOIN 순서 최적화 기초 수준." },
+      "correctness": { "score": 9, "rationale": "NULL IS NULL/IS NOT NULL 3값 로직 정확. JOIN 조건 복합 시 정확. GROUP BY 집계 함수 정확. 서브쿼리 결과 정확." },
+      "architecture": { "score": 9, "rationale": "SQL Parser(재귀 하강) → Query Planner → Executor 완전 분리. 각 모듈 독립 테스트 가능. CLAUDE.md 가이드 활용한 계층 분리." },
+      "extensibility": { "score": 8, "rationale": "새 SQL 구문은 파서 모듈에만 추가. 새 실행 전략 플러거블. 집계 함수 추가 용이." },
+      "documentation": { "score": 8, "rationale": "지원 SQL 구문 전체 목록. AST 노드 타입 정의서. 쿼리 실행 파이프라인 설명. NULL 처리 규칙 문서화." },
+      "dev_environment": { "score": 9, "rationale": "package.json에 test/lint/build 스크립트 완비. 개발 의존성 관리. SQL 예제 실행 환경 구성." }
+    }
+  },
+  "delta": 34
 }

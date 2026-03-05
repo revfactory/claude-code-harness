@@ -1,0 +1,35 @@
+{
+  "case_id": "013",
+  "title": "가상 머신 & 바이트코드 컴파일러",
+  "baseline": {
+    "total": 46,
+    "dimensions": {
+      "feature_completeness": { "score": 5, "rationale": "Lexer/Parser 구현 가능하고 기본 바이트코드 컴파일러는 산술/변수 정도 처리. 그러나 클로저/upvalue 메커니즘 미구현, 고차함수 지원 불완전. 30+ 명령어 중 20개 정도만 구현. 디셈블러 누락" },
+      "test_coverage": { "score": 2, "rationale": "테스트 없거나 수동 console.log 수준. 5개 시나리오에 대한 체계적 테스트 부재. 앵커 룰: 테스트 없음 시 최대 3점" },
+      "code_quality": { "score": 5, "rationale": "동작하는 코드이나 컴파일러와 VM 로직이 혼재. opcode 정의가 매직넘버로 산재. switch문이 수백 줄에 달하는 단일 함수" },
+      "error_handling": { "score": 4, "rationale": "기본적인 문법 에러 보고 정도. 스택 오버플로우 미감지, 타입 에러 미처리, 미정의 변수 접근 시 크래시 가능" },
+      "efficiency": { "score": 5, "rationale": "기본 switch-dispatch 구현. 상수 풀 활용은 하나 최적화 없음. 재귀 피보나치에서 성능 이슈 가능하나 기본 동작은 함" },
+      "correctness": { "score": 5, "rationale": "시나리오 1(산술), 2(제어흐름) 통과. 시나리오 4(재귀) 부분 동작. 시나리오 3(클로저), 5(고차함수) 실패 가능성 높음" },
+      "architecture": { "score": 3, "rationale": "단일 또는 2파일 구조. Lexer/Parser/Compiler/VM이 분리되지 않음. opcode 정의가 코드 내 하드코딩. 앵커 룰: 단일 파일 모놀리식 시 최대 4점" },
+      "extensibility": { "score": 4, "rationale": "새 opcode 추가 시 컴파일러와 VM 양쪽의 거대한 switch문 수정 필요. 내장 함수 확장 구조 없음" },
+      "documentation": { "score": 5, "rationale": "기본 사용법 주석 정도. opcode 명세 문서화 없음. 바이트코드 형식 설명 부재" },
+      "dev_environment": { "score": 5, "rationale": "package.json 존재하나 test 스크립트 미설정. 빌드/린트 설정 없음. 기본적인 npm init 수준" }
+    }
+  },
+  "harness": {
+    "total": 80,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "30+ opcode 전체 구현. 클로저/upvalue 메커니즘 완전 동작. 디셈블러로 바이트코드 텍스트 출력. 5개 시나리오 모두 실행. 배열 연산, 내장 함수(print, len, push) 완비" },
+      "test_coverage": { "score": 8, "rationale": "컴파일러 바이트코드 생성 검증, VM opcode별 실행 검증, 5개 시나리오 통합 테스트, 에러 케이스(스택 오버플로, 타입 에러, 미정의 변수) 테스트, 디셈블러 출력 테스트" },
+      "code_quality": { "score": 8, "rationale": "opcode를 열거형으로 명확히 정의. 컴파일러 visitor 패턴 사용. VM의 fetch-decode-execute 루프가 깔끔하게 구조화. 상수 풀/라인 정보 체계적 관리" },
+      "error_handling": { "score": 7, "rationale": "스택 오버플로우 감지, 타입 에러 보고(연산자별), 미정의 변수/함수 접근 시 명확한 에러, 재귀 깊이 제한. 컴파일 타임 에러와 런타임 에러 구분" },
+      "efficiency": { "score": 7, "rationale": "상수 풀 중복 제거, 직접 dispatch 활용, CallFrame 기반 효율적 호출 스택. 바이트코드 레벨 실행으로 인터프리터 대비 성능 향상" },
+      "correctness": { "score": 8, "rationale": "5개 시나리오 모두 정확한 결과. 클로저 upvalue 캡처/해제 정확. 재귀 피보나치 fib(10)=55 검증. 고차함수 map 동작. 배열 인덱스 접근/설정 정확" },
+      "architecture": { "score": 9, "rationale": "lexer/parser/compiler/vm/disassembler 5개 모듈 완전 분리. opcode 정의 별도 모듈. Chunk/FunctionObject/Closure/CallFrame 명확한 데이터 구조. stdlib 별도 관리" },
+      "extensibility": { "score": 8, "rationale": "새 opcode 추가 시 opcode 정의 + 컴파일러 visitor + VM handler 3곳만 수정. 내장 함수 레지스트리로 확장 용이. 새 데이터 타입 추가 구조 마련" },
+      "documentation": { "score": 7, "rationale": "opcode 참조 문서, 바이트코드 형식 설명, 클로저/upvalue 메커니즘 문서. 코드 내 JSDoc 주석. 시나리오별 실행 예시" },
+      "dev_environment": { "score": 9, "rationale": "package.json에 test/lint/build 스크립트 완비. Jest 테스트 프레임워크 설정. ESLint 설정. 디버그 모드(디셈블러 활성화) 지원" }
+    }
+  },
+  "delta": 34
+}

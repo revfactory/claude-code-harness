@@ -1,0 +1,233 @@
+{
+  "report_date": "2026-03-05",
+  "scoring_system": "10차원 x 10점 = 100점 만점",
+  "total_cases": 15,
+  "win_rate": "15/15 (100%)",
+  "overall": {
+    "baseline_avg": 49.5,
+    "harness_avg": 79.3,
+    "delta_avg": 29.9
+  },
+  "by_difficulty": {
+    "basic": {
+      "cases": [
+        "001",
+        "002",
+        "003",
+        "004",
+        "005"
+      ],
+      "baseline_avg": 52.0,
+      "harness_avg": 75.8,
+      "delta_avg": 23.8
+    },
+    "advanced": {
+      "cases": [
+        "006",
+        "007",
+        "008",
+        "009",
+        "010"
+      ],
+      "baseline_avg": 51.8,
+      "harness_avg": 81.4,
+      "delta_avg": 29.6
+    },
+    "expert": {
+      "cases": [
+        "011",
+        "012",
+        "013",
+        "014",
+        "015"
+      ],
+      "baseline_avg": 44.6,
+      "harness_avg": 80.8,
+      "delta_avg": 36.2
+    }
+  },
+  "case_results": [
+    {
+      "case_id": "001",
+      "title": "Express TODO REST API",
+      "difficulty": "basic",
+      "baseline": 52,
+      "harness": 76,
+      "delta": 24
+    },
+    {
+      "case_id": "002",
+      "title": "AsyncCache 레이스 컨디션",
+      "difficulty": "basic",
+      "baseline": 48,
+      "harness": 72,
+      "delta": 24
+    },
+    {
+      "case_id": "003",
+      "title": "calc() 리팩토링",
+      "difficulty": "basic",
+      "baseline": 46,
+      "harness": 74,
+      "delta": 28
+    },
+    {
+      "case_id": "004",
+      "title": "datekit README",
+      "difficulty": "basic",
+      "baseline": 62,
+      "harness": 78,
+      "delta": 16
+    },
+    {
+      "case_id": "005",
+      "title": "CLI 블로그 생성기",
+      "difficulty": "basic",
+      "baseline": 52,
+      "harness": 79,
+      "delta": 27
+    },
+    {
+      "case_id": "006",
+      "title": "React 상태 관리 비교",
+      "difficulty": "advanced",
+      "baseline": 58,
+      "harness": 76,
+      "delta": 18
+    },
+    {
+      "case_id": "007",
+      "title": "MiniLang 인터프리터",
+      "difficulty": "advanced",
+      "baseline": 52,
+      "harness": 82,
+      "delta": 30
+    },
+    {
+      "case_id": "008",
+      "title": "마이크로서비스 SAGA",
+      "difficulty": "advanced",
+      "baseline": 49,
+      "harness": 83,
+      "delta": 34
+    },
+    {
+      "case_id": "009",
+      "title": "SQL 쿼리 엔진",
+      "difficulty": "advanced",
+      "baseline": 50,
+      "harness": 84,
+      "delta": 34
+    },
+    {
+      "case_id": "010",
+      "title": "CRDT 텍스트 에디터",
+      "difficulty": "advanced",
+      "baseline": 50,
+      "harness": 82,
+      "delta": 32
+    },
+    {
+      "case_id": "011",
+      "title": "Raft KV 스토어",
+      "difficulty": "expert",
+      "baseline": 44,
+      "harness": 80,
+      "delta": 36
+    },
+    {
+      "case_id": "012",
+      "title": "리액티브 스프레드시트",
+      "difficulty": "expert",
+      "baseline": 49,
+      "harness": 83,
+      "delta": 34
+    },
+    {
+      "case_id": "013",
+      "title": "바이트코드 VM 컴파일러",
+      "difficulty": "expert",
+      "baseline": 46,
+      "harness": 80,
+      "delta": 34
+    },
+    {
+      "case_id": "014",
+      "title": "이벤트 소싱 CQRS",
+      "difficulty": "expert",
+      "baseline": 44,
+      "harness": 82,
+      "delta": 38
+    },
+    {
+      "case_id": "015",
+      "title": "LSP 서버",
+      "difficulty": "expert",
+      "baseline": 40,
+      "harness": 79,
+      "delta": 39
+    }
+  ],
+  "dimension_analysis": {
+    "test_coverage": {
+      "baseline": 2.5,
+      "harness": 7.3,
+      "delta": 4.8,
+      "rank": 1
+    },
+    "architecture": {
+      "baseline": 3.9,
+      "harness": 8.3,
+      "delta": 4.4,
+      "rank": 2
+    },
+    "error_handling": {
+      "baseline": 4.3,
+      "harness": 7.3,
+      "delta": 3.0,
+      "rank": 3
+    },
+    "extensibility": {
+      "baseline": 4.6,
+      "harness": 7.6,
+      "delta": 3.0,
+      "rank": 4
+    },
+    "feature_completeness": {
+      "baseline": 6.1,
+      "harness": 8.9,
+      "delta": 2.8,
+      "rank": 5
+    },
+    "code_quality": {
+      "baseline": 5.2,
+      "harness": 8.0,
+      "delta": 2.8,
+      "rank": 6
+    },
+    "correctness": {
+      "baseline": 5.5,
+      "harness": 8.3,
+      "delta": 2.8,
+      "rank": 7
+    },
+    "documentation": {
+      "baseline": 5.0,
+      "harness": 7.5,
+      "delta": 2.5,
+      "rank": 8
+    },
+    "dev_environment": {
+      "baseline": 5.7,
+      "harness": 7.8,
+      "delta": 2.1,
+      "rank": 9
+    },
+    "efficiency": {
+      "baseline": 5.5,
+      "harness": 7.3,
+      "delta": 1.8,
+      "rank": 10
+    }
+  }
+}

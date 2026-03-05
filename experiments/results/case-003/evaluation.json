@@ -1,55 +1,35 @@
 {
-  "case_id": "case-003",
-  "task": "calc() 스파게티 코드 리팩토링 (변수명, SRP, 상수, 전략패턴, 테스트)",
-  "evaluation_date": "2026-03-05",
+  "case_id": "003",
+  "title": "스파게티 코드 리팩토링 (calc 함수 -> 전략 패턴)",
   "baseline": {
-    "completeness": 8,
-    "code_quality": 7,
-    "efficiency": 7,
-    "accuracy": 8,
-    "structure": 7,
-    "total": 37,
-    "summary": "기능 요구사항(변수명, SRP, 상수 추출, 전략 패턴, 테스트)을 모두 충족. 전략 패턴을 함수 기반으로 구현하여 간결하지만, GoF 전략 패턴의 정석적 클래스 구조 대비 다소 단순. 테스트 17건은 통합+단위를 커버하나 경계값 테스트가 부재. 테스트 프레임워크 없이 수동 boolean 비교 방식으로 검증 신뢰도가 약간 낮음. 상수를 개별 export하여 명확하지만 그룹핑이 없어 확장성 측면에서 약간 부족."
-  },
-  "harness": {
-    "completeness": 9,
-    "code_quality": 9,
-    "efficiency": 8,
-    "accuracy": 9,
-    "structure": 9,
-    "total": 44,
-    "summary": "태스크의 모든 요구사항을 높은 수준으로 충족. 전략 패턴을 클래스 기반 상속 구조(PricingStrategy -> WholesalePricingStrategy, VipPricingStrategy)로 구현하여 정석적 GoF 패턴에 부합. 팩토리 함수(createPricingStrategy) 포함. 상수를 ORDER_CONSTANTS 객체로 그룹핑하고 PERCENT_DIVISOR까지 상수화하여 매직 넘버를 철저히 제거. 테스트 31건으로 통합(10) + 전략 패턴 단위(6) + SRP 함수 단위(9) + 경계값(6) 네 계층으로 체계화. assertClose 유틸리티로 부동소수점 비교를 안전하게 처리. for...of 루프 사용으로 현대적 코드 스타일. JSDoc 주석이 모든 함수에 일관되게 적용."
-  },
-  "criteria_details": {
-    "completeness": {
-      "baseline": "8 - 5가지 요구사항(변수명, SRP, 상수, 전략패턴, 테스트) 모두 수행했으나 테스트 커버리지가 상대적으로 낮음(17건)",
-      "harness": "9 - 5가지 요구사항을 모두 높은 완성도로 수행. 테스트 31건으로 경계값까지 포함한 포괄적 검증"
-    },
-    "code_quality": {
-      "baseline": "7 - 깔끔한 코드이나 함수형 전략 패턴이 확장성 측면에서 제한적. 테스트에서 수동 boolean 비교 사용",
-      "harness": "9 - 클래스 기반 전략 패턴으로 OCP(개방-폐쇄 원칙) 준수. assertClose로 부동소수점 안전 비교. JSDoc 일관 적용. for...of 등 현대적 문법"
-    },
-    "efficiency": {
-      "baseline": "7 - 직관적이고 간결한 구현. 불필요한 복잡도 없음",
-      "harness": "8 - 클래스 인스턴스 생성 비용은 미미. PERCENT_DIVISOR 상수화는 약간 과도하나 일관성 기여. 전체적으로 효율적"
-    },
-    "accuracy": {
-      "baseline": "8 - 원본과 동일 입출력 검증 완료. 12개 통합 테스트로 정확성 확인",
-      "harness": "9 - 원본 동일 입출력 검증 + 경계값 6건(qty=50/51/100/101, grandTotal=10000/10001)으로 엣지 케이스까지 정밀 검증. assertClose로 부동소수점 오차 안전 처리"
-    },
-    "structure": {
-      "baseline": "7 - 3파일 모듈 분리(constants, pricingStrategies, calculator) 적절. 개별 상수 export로 단순하지만 그룹핑 부재",
-      "harness": "9 - 동일한 3파일 구조에 ORDER_CONSTANTS 객체 그룹핑. 클래스 계층 구조로 전략 패턴 정석 구현. 테스트가 4개 섹션으로 체계적 분류"
+    "total": 46,
+    "dimensions": {
+      "feature_completeness": { "score": 7, "rationale": "calc() 함수를 분리하고 기본 연산은 구현하나, 전략 패턴 적용이 불완전할 수 있음. 일부 연산 누락 또는 새 연산 등록 메커니즘 미구현." },
+      "test_coverage": { "score": 2, "rationale": "리팩토링 후 테스트 미작성. 기존 동작이 보존되는지 검증할 수단 없음. 앵커드 루브릭: 테스트 없음 시 최대 3점." },
+      "code_quality": { "score": 5, "rationale": "매직 넘버 일부 상수화하나 불완전. 함수 분리는 하되 네이밍이 불명확하거나 일관성 부족. if-else 체인이 switch로 바뀐 정도." },
+      "error_handling": { "score": 4, "rationale": "알 수 없는 연산에 대한 기본 에러는 있으나, 0으로 나누기, 오버플로우 등 수학적 엣지 케이스 미처리." },
+      "efficiency": { "score": 6, "rationale": "리팩토링 자체로 효율성 변화 없음. 불필요한 복잡성 추가하지는 않으나, 최적화 기회도 놓침." },
+      "correctness": { "score": 6, "rationale": "기본 연산은 정확하나 리팩토링 중 미묘한 동작 변경 가능성. 테스트 없어 검증 불가." },
+      "architecture": { "score": 4, "rationale": "전략 패턴을 시도하나 단일 파일 내 구현. 전략 객체와 컨텍스트 분리 불완전. 패턴의 형태만 갖춘 수준." },
+      "extensibility": { "score": 5, "rationale": "전략 패턴 의도는 있으나 새 연산 추가 시 기존 코드 수정 필요(OCP 위반). 동적 등록 메커니즘 부재." },
+      "documentation": { "score": 3, "rationale": "리팩토링 의도나 설계 결정에 대한 문서 없음. 어떤 패턴을 적용했는지 설명 부재." },
+      "dev_environment": { "score": 4, "rationale": "package.json 있으나 test/lint 스크립트 없음. 빌드 파이프라인 미구성." }
     }
   },
-  "winner": "harness",
-  "score_difference": 7,
-  "key_differences": [
-    "전략 패턴: Baseline은 함수 기반(간결), Harness는 클래스 상속 기반(정석 GoF, 확장 용이)",
-    "테스트 규모: Baseline 17건 vs Harness 31건 (경계값 테스트 6건 추가)",
-    "테스트 품질: Harness는 assertClose(부동소수점), 체계적 test runner, 4계층 분류 적용",
-    "상수 관리: Baseline은 개별 export, Harness는 ORDER_CONSTANTS 객체 그룹핑 + PERCENT_DIVISOR 상수화",
-    "코드 스타일: Harness가 for...of, JSDoc 일관성 등에서 현대적"
-  ],
-  "harness_advantage_from_config": "CLAUDE.md의 리팩토링 원칙(SRP, DRY, 전략 패턴), refactoring-patterns 스킬(전략 패턴 가이드), refactor 커맨드의 사전 구성이 클래스 기반 전략 패턴 적용, 체계적 테스트 계층화, 경계값 테스트 포함 등 구조화된 접근을 유도한 것으로 판단됨"
+  "harness": {
+    "total": 74,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "전략 패턴 완전 적용. 모든 연산을 독립 전략으로 분리. 매직 넘버 상수화 완료. 새 연산 등록 메커니즘 구현. CLAUDE.md 체크리스트 전항목 충족." },
+      "test_coverage": { "score": 7, "rationale": "각 전략별 단위 테스트. 기존 calc() 동작 보존 확인하는 통합 테스트. 엣지 케이스(0 나누기, 음수, 큰 수) 테스트 포함." },
+      "code_quality": { "score": 8, "rationale": "skills에 정의된 디자인 패턴 규칙 준수. 명확한 네이밍(AddStrategy, CalculatorContext 등). 매직 넘버 완전 상수화. 함수 길이 10줄 이하." },
+      "error_handling": { "score": 7, "rationale": "각 전략에서 입력 유효성 검사. 0으로 나누기 예외. 미지원 연산 에러. 커스텀 에러 클래스 사용." },
+      "efficiency": { "score": 7, "rationale": "전략 패턴으로 조건문 제거. Map 기반 전략 조회로 O(1). 불필요한 객체 생성 최소화." },
+      "correctness": { "score": 8, "rationale": "테스트로 모든 연산의 정확성 검증. 리팩토링 전후 동일 결과 보장. 부동소수점 처리 고려." },
+      "architecture": { "score": 8, "rationale": "strategies/ 디렉토리에 전략 분리. CalculatorContext 클래스로 컨텍스트 분리. constants.js로 상수 분리. 파일별 단일 책임." },
+      "extensibility": { "score": 8, "rationale": "새 연산 추가 시 Strategy 인터페이스 구현 후 등록만 하면 됨. OCP 준수. 플러그인 방식 확장 가능." },
+      "documentation": { "score": 6, "rationale": "각 전략에 JSDoc 주석. 리팩토링 결정 사유 주석. 사용법 예시는 테스트 코드에서 확인 가능." },
+      "dev_environment": { "score": 7, "rationale": "package.json에 test, lint 스크립트. Jest 설정. ESLint 규칙 적용. scripts 섹션 체계적." }
+    }
+  },
+  "delta": 28
 }

@@ -1,0 +1,204 @@
+id: case-011
+category: complex-system
+title: "분산 키-밸류 스토어 (Raft Consensus)"
+difficulty: expert
+description: |
+  Raft 합의 알고리즘 기반의 분산 키-밸류 스토어를 구현하세요.
+
+  ## Raft 합의 알고리즘
+
+  ### 노드 상태
+  - **Follower**: 기본 상태, 리더의 heartbeat 수신
+  - **Candidate**: 선거 시작, 투표 요청
+  - **Leader**: 로그 복제, 클라이언트 요청 처리
+
+  ### 리더 선출 (Leader Election)
+  ```
+  Follower --[election timeout]--> Candidate
+  Candidate --[과반 투표 획득]--> Leader
+  Candidate --[상위 term 발견]--> Follower
+  Leader --[상위 term 발견]--> Follower
+  ```
+
+  ### 로그 복제 (Log Replication)
+  ```javascript
+  // 로그 엔트리
+  { term: 2, index: 5, command: { type: 'SET', key: 'x', value: 42 } }
+
+  // AppendEntries RPC
+  appendEntries({
+    term, leaderId, prevLogIndex, prevLogTerm,
+    entries: [...], leaderCommit
+  })
+
+  // RequestVote RPC
+  requestVote({ term, candidateId, lastLogIndex, lastLogTerm })
+  ```
+
+  ### 키-밸류 연산
+  ```javascript
+  await cluster.put('key', 'value');    // 쓰기 (리더 경유)
+  const val = await cluster.get('key'); // 읽기
+  await cluster.delete('key');          // 삭제
+  await cluster.cas('key', oldVal, newVal); // Compare-And-Swap
+  ```
+
+  ## 구현 요구사항
+
+  ### 1. RaftNode
+  ```javascript
+  class RaftNode {
+    constructor(id, peers)
+
+    // 상태: follower | candidate | leader
+    getState()
+
+    // RPC 처리
+    handleAppendEntries(request)  // → response
+    handleRequestVote(request)    // → response
+
+    // 클라이언트 요청 (리더만)
+    propose(command)  // → { success, result }
+
+    // 타이머
+    resetElectionTimer()
+    startHeartbeat()
+  }
+  ```
+
+  ### 2. RaftLog
+  ```javascript
+  class RaftLog {
+    append(entry)
+    getEntry(index)
+    getLastIndex()
+    getLastTerm()
+    truncateFrom(index)  // 충돌 시 로그 덮어쓰기
+    getEntriesFrom(index)
+  }
+  ```
+
+  ### 3. StateMachine (KV Store)
+  ```javascript
+  class KVStateMachine {
+    apply(command)  // SET/GET/DELETE/CAS 명령 적용
+    get(key)
+    snapshot()      // 상태 스냅샷
+    restore(snapshot)
+  }
+  ```
+
+  ### 4. Transport (시뮬레이션)
+  ```javascript
+  class SimulatedTransport {
+    send(from, to, message)
+    // 네트워크 장애 시뮬레이션
+    partition(nodeIds)       // 네트워크 분할
+    heal()                   // 복구
+    addLatency(ms)           // 지연 추가
+    dropRate(percentage)     // 패킷 손실
+  }
+  ```
+
+  ### 5. Cluster
+  ```javascript
+  class RaftCluster {
+    addNode(id)
+    removeNode(id)
+    getLeader()
+
+    // KV 인터페이스
+    put(key, value)
+    get(key)
+    delete(key)
+    cas(key, expected, desired)
+
+    // 시뮬레이션
+    tick(ms)         // 시간 진행
+    partitionLeader() // 리더 격리
+  }
+  ```
+
+  ## 핵심 시나리오 (반드시 통과)
+
+  ### 시나리오 1: 기본 리더 선출
+  ```
+  5노드 클러스터 시작 → 선거 타임아웃 → 1개 노드가 리더 선출
+  검증: 정확히 1개의 리더, 나머지 follower
+  ```
+
+  ### 시나리오 2: 리더 장애 + 재선출
+  ```
+  리더 선출 → 리더 격리(partition) → 새 리더 선출
+  기존 리더 복귀 → follower로 전환
+  ```
+
+  ### 시나리오 3: 로그 복제 & 커밋
+  ```
+  put('x', 1) → 리더가 로그 엔트리 생성 → 과반 복제 → 커밋
+  모든 노드의 상태 머신에 적용 → get('x') === 1
+  ```
+
+  ### 시나리오 4: 네트워크 분할 & 복구
+  ```
+  5노드 → [A,B] | [C,D,E] 분할
+  [C,D,E]에서 새 리더 선출, 쓰기 계속
+  분할 복구 → [A,B] 로그 따라잡기
+  최종: 모든 노드 동일 상태
+  ```
+
+  ### 시나리오 5: 동시 쓰기 일관성
+  ```
+  여러 클라이언트가 동시에 put 요청
+  모든 쓰기가 순서화되어 적용
+  모든 노드에서 동일한 최종 상태
+  ```
+
+  ## 테스트 요구사항
+  - 리더 선출 (단일 후보, 경쟁 후보)
+  - 로그 복제 (정상, 지연, 불일치)
+  - 네트워크 분할 (2-3 분할, 마이너리티 리더)
+  - 클라이언트 리다이렉션 (팔로워 → 리더)
+  - Compare-And-Swap 원자성
+  - 스냅샷 & 복구
+
+  ## 검증 프로그램
+  ```javascript
+  const cluster = new RaftCluster(5);
+  cluster.start();
+  cluster.tick(1000); // 리더 선출 대기
+
+  // 기본 CRUD
+  await cluster.put('name', 'Alice');
+  assert(await cluster.get('name') === 'Alice');
+
+  // 리더 장애
+  const leader = cluster.getLeader();
+  cluster.partition([leader.id]);
+  cluster.tick(2000); // 재선출
+
+  // 새 리더로 쓰기 계속
+  await cluster.put('name', 'Bob');
+  assert(await cluster.get('name') === 'Bob');
+
+  // 복구 후 수렴
+  cluster.heal();
+  cluster.tick(1000);
+  // 모든 노드에서 동일한 값
+  for (const node of cluster.getNodes()) {
+    assert(node.stateMachine.get('name') === 'Bob');
+  }
+  ```
+
+expected_outputs:
+  - "RaftNode 클래스"
+  - "로그 복제 구현"
+  - "리더 선출"
+  - "KV 스토어"
+  - "네트워크 시뮬레이터"
+  - "테스트"
+evaluation_criteria:
+  completeness: "리더 선출 + 로그 복제 + 네트워크 분할/복구 + KV CRUD"
+  quality: "Raft 알고리즘 정확성, 모듈 분리"
+  correctness: "5개 시나리오 모두 통과, 선형화 가능 일관성"
+  efficiency: "효율적인 heartbeat, 로그 압축"

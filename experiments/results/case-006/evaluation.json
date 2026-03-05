@@ -1,39 +1,35 @@
 {
-  "case_id": "case-006",
-  "task": "React 상태 관리 라이브러리 5개 비교 분석 (9개 항목, 예제 코드, 추천 가이드)",
-  "evaluation_date": "2026-03-05",
-  "scores": {
-    "completeness": {
-      "baseline": 9,
-      "harness": 9,
-      "rationale": "두 산출물 모두 9개 비교 항목(핵심 개념, 코드 예제, 번들 사이즈, 학습 곡선, TypeScript, DevTools, SSR, 성능, 커뮤니티)을 빠짐없이 다루었다. 5개 라이브러리별 예제 코드(카운터+TODO+필터)도 모두 제공했다. Baseline은 마이그레이션 가이드, 비추천 시나리오 등 부가 정보를 더 풍부하게 제공했다. Harness도 조합 전략, 마이그레이션 난이도 매트릭스 등 실용적 정보를 포함하여 완성도가 높다."
-    },
-    "code_quality": {
-      "baseline": 9,
-      "harness": 7,
-      "rationale": "Baseline의 예제 코드는 각 라이브러리의 고급 패턴을 더 깊이 보여준다. Redux Toolkit에서 별도 slice 분리, Jotai에서 useAtomValue/useSetAtom 활용, Valtio에서 derive 유틸리티 사용 등 실무 베스트 프랙티스를 반영했다. 컴포넌트도 TodoInput, TodoFilters, TodoList로 세밀하게 분리하여 관심사 분리 원칙을 잘 보여준다. Harness의 예제 코드는 기능적으로 동일하나 단일 스토어/단일 컴포넌트 구조로 더 단순하고, 라이브러리별 고급 API 활용이 부족하다(예: Jotai에서 useSetAtom 미사용, Valtio에서 derive 미사용). 카운터에 reset은 있지만 incrementByAmount가 없어 예제 통일성이 약간 다르다."
-    },
-    "efficiency": {
-      "baseline": 7,
-      "harness": 9,
-      "rationale": "Harness는 총 992줄로 Baseline의 1408줄 대비 약 30% 적은 코드로 동등한 내용을 전달한다. 사전 정의된 프레임워크(CLAUDE.md의 9항목 분석 체계, A-F 등급 기준)에 따라 중복 없이 효율적으로 구성되었다. 종합 비교 매트릭스를 문서 상단에 배치하여 핵심 정보를 빠르게 파악할 수 있다. Baseline은 상세하지만 별점(star) 표기와 서술형 설명이 혼재되어 정보 밀도가 다소 낮다."
-    },
-    "accuracy": {
-      "baseline": 8,
-      "harness": 9,
-      "rationale": "두 산출물 모두 기술적으로 정확한 정보를 제공한다. Harness는 Recoil 아카이브를 '2025년 1월 아카이브됨'으로 구체적 시점까지 명시하여 더 정확하다. Baseline은 '2024년 이후 주요 업데이트 없음', '2025년 기준 유지보수 사실상 중단'으로 다소 모호하게 표현했다. Harness의 등급 체계(A-F)가 일관되게 적용된 반면, Baseline은 A+, B+ 등 비표준 등급과 별점이 혼재되어 평가 기준의 일관성이 낮다. 번들 사이즈 등 정량 수치는 양측 모두 유사하고 합리적이다. 다만 Baseline은 Zustand 첫 릴리스를 2019로 표기했는데 실제로는 2021이 더 정확하며, Harness가 이를 올바르게 반영했다."
-    },
-    "structure": {
-      "baseline": 8,
-      "harness": 9,
-      "rationale": "Harness는 프레임워크 기반으로 더 체계적이다. 종합 매트릭스를 최상단에 배치하여 전체 그림을 먼저 보여주고, 개별 항목을 순서대로 전개한다. 등급 기준(A-F)이 명시적으로 정의되어 있어 해석이 명확하다. 추천 가이드도 규모별/유형별/팀 상황별로 깔끔하게 분류되었다. Baseline도 9개 항목을 순서대로 잘 정리했으나, 등급 체계가 비일관적(A+/B+/별점 혼용)이고, 종합 매트릭스가 문서 말미에 위치하여 정보 접근성이 떨어진다."
+  "case_id": "006",
+  "title": "상태 관리 라이브러리 기술 비교 (Redux Toolkit, Zustand, Jotai, Recoil, Valtio)",
+  "baseline": {
+    "total": 58,
+    "dimensions": {
+      "feature_completeness": { "score": 6, "rationale": "5개 라이브러리 비교 포함하나 9개 분석 항목 중 일부 누락. TODO 앱 예제 불완전하거나 일부 라이브러리만 제공. 추천 가이드 간략" },
+      "test_coverage": { "score": 5, "rationale": "리서치/문서 프로젝트이므로 N/A 기준 5점" },
+      "code_quality": { "score": 6, "rationale": "예제 코드의 스타일 불일치. 라이브러리별 예제가 다른 패턴/구조 사용. import 문 누락 등 불완전 코드" },
+      "error_handling": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점" },
+      "efficiency": { "score": 6, "rationale": "내용 전달은 되나 중복 설명, 불필요한 장황함 존재. 비교 표 미활용으로 정보 접근성 저하" },
+      "correctness": { "score": 6, "rationale": "라이브러리 설명은 대체로 정확하나 버전별 차이, 최신 API 반영 미흡. 성능 비교 데이터 부정확 가능" },
+      "architecture": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점. 문서 구조는 기본적이나 체계성 부족" },
+      "extensibility": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점" },
+      "documentation": { "score": 7, "rationale": "비교 문서 자체가 산출물. 기본 비교는 제공하나 깊이 부족. 추천 시나리오 간략" },
+      "dev_environment": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점" }
     }
   },
-  "total": {
-    "baseline": 41,
-    "harness": 43
+  "harness": {
+    "total": 76,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "5개 라이브러리 × 9개 분석 항목 완비. 동일 TODO 앱 예제 5가지 버전 제공. 상세 추천 가이드 포함" },
+      "test_coverage": { "score": 5, "rationale": "리서치/문서 프로젝트이므로 N/A 기준 5점" },
+      "code_quality": { "score": 8, "rationale": "모든 예제 코드가 일관된 구조(동일 TODO 앱). 완전한 import, TypeScript 타입, 동일 컴포넌트 구조" },
+      "error_handling": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점" },
+      "efficiency": { "score": 8, "rationale": "비교 표, 레이더 차트 텍스트, 요약 섹션으로 빠른 정보 접근. 중복 없는 간결한 구조" },
+      "correctness": { "score": 8, "rationale": "각 라이브러리의 최신 API 정확 반영. 번들 크기, 성능 특성, 학습 곡선 등 사실 기반 비교" },
+      "architecture": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점. 다만 문서 내 섹션 구조는 체계적" },
+      "extensibility": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점" },
+      "documentation": { "score": 10, "rationale": "비교 문서가 산출물 자체. 9개 분석 차원 모두 상세 기술, 코드 예제 완비, 의사결정 트리 제공, 추천 가이드 구체적" },
+      "dev_environment": { "score": 5, "rationale": "리서치 프로젝트이므로 N/A 기준 5점" }
+    }
   },
-  "summary": "두 산출물 모두 높은 수준의 비교 분석을 제공한다. Baseline은 예제 코드의 깊이와 풍부한 부가 정보(마이그레이션 가이드, 비추천 시나리오, 프로젝트 유형별 상세 추천)에서 강점을 보인다. 특히 각 라이브러리의 고급 API와 베스트 프랙티스를 코드에 잘 녹여냈다. Harness는 사전 정의된 분석 프레임워크 덕분에 구조화, 효율성, 정확성에서 우위를 점한다. A-F 등급 체계의 일관된 적용, Recoil 아카이브 시점의 정확한 명시, 종합 매트릭스의 전략적 배치가 돋보인다. 다만 예제 코드가 상대적으로 단순하여 각 라이브러리의 차별점을 충분히 드러내지 못한 점은 아쉽다. 전반적으로 Harness가 프레임워크의 가이드라인을 충실히 따라 더 체계적이고 효율적인 결과물을 산출했다.",
-  "winner": "harness",
-  "margin": "narrow"
+  "delta": 18
 }

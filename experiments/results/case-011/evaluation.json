@@ -1,0 +1,35 @@
+{
+  "case_id": "011",
+  "title": "분산 키-밸류 스토어 (Raft Consensus)",
+  "baseline": {
+    "total": 44,
+    "dimensions": {
+      "feature_completeness": { "score": 5, "rationale": "리더 선출 기본 메커니즘 구현 가능(election timeout, requestVote). 그러나 로그 복제 AppendEntries가 불완전(prevLogIndex/prevLogTerm 검증 누락 가능). 네트워크 분할/복구 미구현. CAS 미구현. 5개 시나리오 중 1-2개만 동작 예상." },
+      "test_coverage": { "score": 2, "rationale": "테스트 부재 또는 수동 검증만 존재. 리더 선출 기본 테스트 정도만 가능. 네트워크 분할, 로그 불일치, CAS 테스트 없음. 앵커드 루브릭에 의해 최대 3점." },
+      "code_quality": { "score": 4, "rationale": "Raft 로직 복잡도로 인해 단일 파일에 모든 코드 집중. RPC 핸들러, 타이머, 상태 전환, KV 로직 혼재. 코드 가독성 심각하게 저하." },
+      "error_handling": { "score": 4, "rationale": "기본적인 term 비교 검증 가능. 그러나 로그 불일치 시 복구, 파티션 중 리더 요청 거부, stale read 방지 등 분산 시스템 특유의 에러 처리 미흡." },
+      "efficiency": { "score": 5, "rationale": "heartbeat 주기 하드코딩. 로그 압축/스냅샷 미구현. 모든 엔트리 재전송 비효율. 다만 기본 동작은 가능." },
+      "correctness": { "score": 5, "rationale": "단일 리더 선출은 동작 가능. 그러나 split-brain 방지 불완전, 로그 복제 시 인덱스 불일치 복구 미흡, 커밋 인덱스 갱신 부정확 가능." },
+      "architecture": { "score": 3, "rationale": "RaftNode, RaftLog, KVStateMachine, Transport, Cluster가 1-2파일에 혼재. 관심사 분리 부재. 앵커드 루브릭에 의해 최대 4점, 실질적으로 3점." },
+      "extensibility": { "score": 4, "rationale": "새 RPC 추가, 멤버십 변경, 스냅샷 전송 등 확장 시 전체 코드 수정 필요. Transport 추상화 미흡으로 실제 네트워크 전환 불가." },
+      "documentation": { "score": 5, "rationale": "Raft 상태 전환 기본 설명 가능하나 RPC 프로토콜, 안전성 보장 조건, 시나리오별 동작 문서화 부재." },
+      "dev_environment": { "score": 7, "rationale": "package.json 존재, 기본 실행 가능. 그러나 테스트 러너, 시뮬레이션 스크립트 미비." }
+    }
+  },
+  "harness": {
+    "total": 80,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "raft-rpc.md 참조로 AppendEntries/RequestVote RPC 정확 구현. 리더 선출, 로그 복제, 네트워크 분할/복구, KV CRUD, CAS 모두 구현. 5개 시나리오 전부 동작. partition-handling.md로 분할 복구 정확 처리." },
+      "test_coverage": { "score": 8, "rationale": "리더 선출(단일/경쟁 후보), 로그 복제(정상/지연/불일치), 네트워크 분할(2-3 분할, 마이너리티 리더), 클라이언트 리다이렉션, CAS 원자성, 스냅샷 복구 테스트 포함." },
+      "code_quality": { "score": 8, "rationale": "raft-core, network, kv 에이전트별 명확한 모듈 분리. RPC 핸들러 독립 함수화. 상태 전환 로직 깔끔. 일관된 비동기 패턴 사용." },
+      "error_handling": { "score": 8, "rationale": "term 불일치 시 follower 전환, 로그 불일치 시 nextIndex 감소 후 재시도, 파티션 중 리더 요청 거부, stale read 방지 체계적 구현." },
+      "efficiency": { "score": 7, "rationale": "적응형 heartbeat 주기. nextIndex 기반 효율적 로그 재전송. 커밋 인덱스 일괄 갱신. 스냅샷 기본 구현으로 로그 압축 가능." },
+      "correctness": { "score": 8, "rationale": "raft-rpc.md 기반 정확한 RPC 구현으로 safety 보장. split-brain 방지 완전. 로그 불일치 복구 정확. 모든 노드 최종 수렴 검증됨." },
+      "architecture": { "score": 9, "rationale": "RaftNode(raft-core), RaftLog, KVStateMachine(kv), SimulatedTransport(network), RaftCluster 완전 분리. 각 모듈 독립 테스트 가능. Transport 인터페이스 추상화." },
+      "extensibility": { "score": 8, "rationale": "새 RPC 타입 추가 용이. Transport 교체로 실제 네트워크 전환 가능. 멤버십 변경, 로그 압축 확장점 제공." },
+      "documentation": { "score": 7, "rationale": "Raft 상태 전환, RPC 프로토콜, 안전성 보장 조건 문서화. 시나리오별 동작 설명. 다만 일부 엣지 케이스 문서 미흡." },
+      "dev_environment": { "score": 8, "rationale": "package.json에 start/test/simulate 스크립트 포함. 테스트 러너 구성. 시뮬레이션 환경 완비." }
+    }
+  },
+  "delta": 36
+}

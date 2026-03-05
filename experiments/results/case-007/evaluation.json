@@ -1,54 +1,35 @@
 {
-  "case_id": "case-007",
-  "category": "complex-system",
-  "title": "MiniLang 인터프리터 (Lexer→Parser→AST→Evaluator, 클로저, 고차함수, 검증 프로그램)",
+  "case_id": "007",
+  "title": "MiniLang 인터프리터",
   "baseline": {
-    "completeness": {
-      "score": 9,
-      "notes": "모든 언어 기능(정수/실수/문자열/불리언/배열/null, let/assignment, 산술/비교/논리 연산, if/else if/else, while, for, 함수 선언/익명함수, 클로저, 배열 인덱싱/뮤테이션, 6개 내장함수) 구현 완료. 29개 테스트 전부 통과. 검증 프로그램(map/filter) 정상 실행. validation.ml 파일도 제공. REPL 미구현."
-    },
-    "code_quality": {
-      "score": 7,
-      "notes": "3파일(lexer/parser/evaluator) + entry point로 파이프라인 분리. Parser는 재귀 하강 + 수동 우선순위 클라이밍 방식으로 잘 구현됨. 에러 클래스가 각 모듈에 산재(LexerError in lexer.js, ParseError in parser.js, RuntimeError in evaluator.js). AST 노드가 plain object로 parser.js에 NodeType만 정의. Environment, ReturnSignal 등이 evaluator.js에 혼재."
-    },
-    "efficiency": {
-      "score": 8,
-      "notes": "불필요한 복잡성 없이 깔끔하게 구현. 총 1,335줄로 간결. 수동 우선순위 파싱이 약간 장황하지만 명확하고 이해하기 쉬움."
-    },
-    "correctness": {
-      "score": 9,
-      "notes": "클로저/재귀/고차함수 모두 정확하게 동작. 논리 연산자 단락 평가 구현. 에러 메시지에 행/열 번호 포함. 0으로 나누기 감지. 29개 테스트 전부 통과."
-    },
-    "structure": {
-      "score": 6,
-      "notes": "4개 파일(lexer.js, parser.js, evaluator.js, minilang.js)에 모든 것이 포함. Token/AST/Environment/Error가 독립 모듈로 분리되지 않음. 테스트가 test.js 단일 파일에 통합. 확장 시 evaluator.js가 비대해질 수 있는 구조."
-    },
-    "total": 39
+    "total": 52,
+    "dimensions": {
+      "feature_completeness": { "score": 7, "rationale": "정수, 실수, 문자열, 불리언, 배열, null 타입과 let/fn/if/while/for 구문 대부분 구현 가능. 클로저가 불완전하거나 고차함수 일부 미지원 가능성." },
+      "test_coverage": { "score": 2, "rationale": "테스트 파일 부재 경향. 수동 REPL 테스트에 의존. 앵커드 루브릭에 의해 최대 3점, 실질적으로 거의 없음." },
+      "code_quality": { "score": 5, "rationale": "단일-2파일 구조로 코드 가독성 저하. 함수 길이가 길고 관심사 혼합. 변수명/함수명은 적절할 수 있으나 구조적 품질 미흡." },
+      "error_handling": { "score": 5, "rationale": "기본적인 구문 오류 감지 가능하나, 런타임 에러 처리가 체계적이지 않음. 에러 메시지가 모호할 수 있음." },
+      "efficiency": { "score": 6, "rationale": "인터프리터 기본 구현은 동작하나 최적화 미적용. 환경 체인 탐색이 비효율적일 수 있음." },
+      "correctness": { "score": 6, "rationale": "기본 사례는 정확히 동작하나 클로저 캡처, 재귀 깊이, 엣지 케이스에서 오류 가능성." },
+      "architecture": { "score": 4, "rationale": "단일-2파일 모놀리식 경향. Lexer/Parser/Evaluator 분리가 불명확. 앵커드 루브릭에 의해 최대 4점." },
+      "extensibility": { "score": 5, "rationale": "새 연산자나 타입 추가 시 여러 곳 수정 필요. 파이프라인 분리 미흡으로 확장성 제한." },
+      "documentation": { "score": 5, "rationale": "기본적인 사용법 설명 가능하나 언어 스펙 문서화, AST 구조 설명 등 부재." },
+      "dev_environment": { "score": 7, "rationale": "package.json 존재하고 기본 실행 스크립트 포함. 그러나 lint/format/test 스크립트 미비." }
+    }
   },
   "harness": {
-    "completeness": {
-      "score": 9,
-      "notes": "동일한 언어 기능 모두 구현. 4개 테스트 파일(lexer/parser/interpreter/integration) 전부 통과. 3개 예제 프로그램(fibonacci, map-filter, closure) 포함. reduce, compose 등 추가 고차함수 검증. REPL까지 구현. type()이 int/float을 구분하는 세분화된 타입 시스템."
-    },
-    "code_quality": {
-      "score": 9,
-      "notes": "Pratt Parser 패턴으로 연산자 우선순위를 우아하게 처리. 에러 클래스 계층(MiniLangError→LexerError/ParseError/RuntimeError)이 errors.js에 통합. AST 팩토리 함수(ast.js)로 노드 생성 일관성 확보. BuiltinFunction 클래스로 내장함수 arity 검증. assertNumbers 헬퍼로 타입 검사 체계화."
-    },
-    "efficiency": {
-      "score": 8,
-      "notes": "총 1,929줄로 baseline보다 길지만 REPL, 예제, 계층화된 테스트 등 추가 기능에 의한 것. Pratt Parser 자체는 매우 효율적. 일부 중복(current()와 peek()이 동일)이 있으나 미미함."
-    },
-    "correctness": {
-      "score": 9,
-      "notes": "클로저/재귀/고차함수/함수 합성 모두 정확. ReturnSignal을 throw/catch로 처리하는 방식이 일관적. 배열 인덱스 범위 체크 구현. 비숫자 연산에 대한 타입 검사(assertNumbers). 모든 테스트 통과."
-    },
-    "structure": {
-      "score": 9,
-      "notes": "10개 소스 파일로 관심사 완벽 분리: token.js, errors.js, ast.js, lexer.js, parser.js, environment.js, builtins.js, interpreter.js, repl.js, index.js. 테스트도 4개 파일(lexer/parser/interpreter/integration)로 단계별 분리. 예제 프로그램 3개 별도 디렉토리. 확장성 우수."
-    },
-    "total": 44
+    "total": 82,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "정수, 실수, 문자열, 불리언, 배열, null 완전 지원. let/fn/if/while/for 전체 구현. 클로저, 고차함수, 재귀 완비. map/filter 검증 프로그램 포함." },
+      "test_coverage": { "score": 8, "rationale": "Lexer/Parser/Evaluator 각 단계별 단위 테스트. 클로저, 재귀, 고차함수 통합 테스트. map/filter 검증 시나리오 포함." },
+      "code_quality": { "score": 8, "rationale": "파이프라인 단계별 명확한 모듈 분리. 일관된 코딩 스타일. 함수 단위 적절한 크기 유지." },
+      "error_handling": { "score": 8, "rationale": "Lexer/Parser/Evaluator 각 단계에서 체계적 에러 리포팅. 줄번호/컬럼 정보 포함 가능. 런타임 타입 에러 처리." },
+      "efficiency": { "score": 7, "rationale": "환경 체인 최적화. AST 구조가 효율적. Pratt Parser 패턴 적용으로 파싱 성능 향상." },
+      "correctness": { "score": 9, "rationale": "클로저 캡처 정확. 재귀 동작 검증됨. 엣지 케이스 테스트 통과. map/filter 고차함수 정확 동작." },
+      "architecture": { "score": 9, "rationale": "Lexer→Parser→AST→Evaluator→Environment 완전 분리. 각 모듈 독립적. Pratt Parser 패턴 적용. CLAUDE.md 파일 구조 가이드 활용." },
+      "extensibility": { "score": 8, "rationale": "새 토큰/구문/타입 추가 시 해당 모듈만 수정. 연산자 우선순위 테이블 기반 확장 용이." },
+      "documentation": { "score": 8, "rationale": "언어 스펙 문서화. AST 노드 타입 정의 명확. REPL 사용법 안내." },
+      "dev_environment": { "score": 8, "rationale": "package.json에 start/test/lint 스크립트 포함. 의존성 관리 적절. REPL 실행 환경 구성 완비." }
+    }
   },
-  "delta": 5,
-  "winner": "harness",
-  "summary": "두 구현 모두 MiniLang 인터프리터의 핵심 기능(클로저, 재귀, 고차함수)을 정확하게 구현하여 모든 테스트를 통과함. 완성도와 정확성에서는 동등한 수준. 결정적 차이는 구조화와 코드 품질에서 발생: Harness는 .claude/ 가이드라인에 따라 10개 모듈로 관심사를 완벽히 분리하고, Pratt Parser 패턴을 적용하여 연산자 우선순위를 우아하게 처리함. 에러 클래스 계층, AST 팩토리 함수, BuiltinFunction arity 검증 등 설계 패턴이 체계적. Baseline은 4개 파일에 모든 것을 담아 기능적으로는 충분하지만 확장성과 유지보수성에서 뒤처짐. Harness는 REPL, 3개 예제 프로그램(.mini), 단계별 테스트 분리까지 갖추어 프로덕션 수준의 구조를 보여줌."
+  "delta": 30
 }

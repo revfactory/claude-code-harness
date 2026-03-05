@@ -1,0 +1,149 @@
+id: case-012
+category: complex-system
+title: "리액티브 스프레드시트 엔진"
+difficulty: expert
+description: |
+  셀 간 의존성을 추적하고, 수식을 파싱/평가하며, 변경 시 증분 재계산하는
+  스프레드시트 엔진을 구현하세요.
+
+  ## 수식 문법
+  ```
+  // 리터럴
+  42, 3.14, "hello", true
+
+  // 셀 참조
+  A1, B2, Z99
+
+  // 셀 범위
+  A1:A10, B2:D5
+
+  // 산술 연산
+  A1 + B1, A1 * 2, (A1 + B1) / C1
+
+  // 비교 연산
+  A1 > 10, B1 = "yes", C1 <> 0
+
+  // 문자열 연결
+  A1 & " " & B1
+
+  // 함수 호출
+  SUM(A1:A10)
+  AVERAGE(B1:B5)
+  COUNT(A1:A10)
+  MIN(A1:A10), MAX(A1:A10)
+  IF(A1 > 10, "high", "low")
+  VLOOKUP(A1, B1:C10, 2)
+  CONCATENATE(A1, " ", B1)
+  ABS(A1), ROUND(A1, 2)
+  LEN(A1), UPPER(A1), LOWER(A1)
+  LEFT(A1, 3), RIGHT(A1, 3), MID(A1, 2, 3)
+  ```
+
+  ## 구현 요구사항
+
+  ### 1. Cell & Sheet
+  ```javascript
+  class Cell {
+    setValue(rawInput)      // 숫자, 문자열, 또는 =수식
+    getValue()             // 평가된 값
+    getFormula()           // 원본 수식 문자열
+    getDisplayValue()      // 포맷팅된 표시 값
+    getDependencies()      // 이 셀이 참조하는 셀 목록
+  }
+
+  class Sheet {
+    setCell(ref, value)    // 셀 값 설정 (증분 재계산 트리거)
+    getCell(ref)           // 셀 객체 반환
+    getCellValue(ref)      // 평가된 값 반환
+    getRange(rangeRef)     // 범위의 값 배열 반환
+    deleteCell(ref)        // 셀 삭제 (의존 셀 재계산)
+  }
+  ```
+
+  ### 2. Formula Parser
+  ```javascript
+  class FormulaParser {
+    parse(formulaString)   // "=SUM(A1:A5) + B1*2" → AST
+  }
+  // AST 노드: NumberLiteral, StringLiteral, CellRef, RangeRef,
+  //           BinaryOp, UnaryOp, FunctionCall
+  ```
+
+  ### 3. Dependency Graph
+  ```javascript
+  class DependencyGraph {
+    addDependency(from, to)    // from이 to를 참조
+    removeDependencies(cellRef) // 셀의 모든 의존성 제거
+    getDependents(cellRef)     // 이 셀에 의존하는 셀 목록
+    getEvaluationOrder()       // 위상 정렬된 평가 순서
+    detectCycle()              // 순환 참조 감지
+  }
+  ```
+
+  ### 4. Evaluator
+  ```javascript
+  class FormulaEvaluator {
+    evaluate(ast, sheet)       // AST를 Sheet 컨텍스트에서 평가
+  }
+  ```
+
+  ## 핵심 시나리오
+
+  ### 시나리오 1: 기본 수식 체이닝
+  ```
+  A1 = 10
+  A2 = 20
+  A3 = =A1 + A2        → 30
+  A4 = =A3 * 2         → 60
+  A1 = 15 (변경)       → A3 = 35, A4 = 70 (자동 재계산)
+  ```
+
+  ### 시나리오 2: 범위 함수
+  ```
+  A1=1, A2=2, A3=3, A4=4, A5=5
+  B1 = =SUM(A1:A5)     → 15
+  B2 = =AVERAGE(A1:A5) → 3
+  B3 = =COUNT(A1:A5)   → 5
+  B4 = =MIN(A1:A5)     → 1
+  B5 = =MAX(A1:A5)     → 5
+  ```
+
+  ### 시나리오 3: 순환 참조 감지
+  ```
+  A1 = =B1 + 1
+  B1 = =A1 + 1     → 순환 참조 에러!
+  ```
+
+  ### 시나리오 4: 조건부 수식
+  ```
+  A1 = 85
+  B1 = =IF(A1 >= 90, "A", IF(A1 >= 80, "B", IF(A1 >= 70, "C", "F")))
+  → "B"
+  ```
+
+  ### 시나리오 5: VLOOKUP
+  ```
+  A1:A3 = [1, 2, 3]
+  B1:B3 = ["Apple", "Banana", "Cherry"]
+  C1 = =VLOOKUP(2, A1:B3, 2)  → "Banana"
+  ```
+
+  ## 테스트 요구사항
+  - 수식 파서: 모든 연산자, 함수, 셀 참조, 범위
+  - 의존성 그래프: 의존 추적, 위상 정렬, 순환 감지
+  - 증분 재계산: 체이닝 변경 전파
+  - 내장 함수: SUM, AVERAGE, COUNT, MIN, MAX, IF, VLOOKUP 등
+  - 에지 케이스: 빈 셀, 타입 불일치, 범위 오류
+
+expected_outputs:
+  - "수식 파서"
+  - "의존성 그래프"
+  - "증분 재계산 엔진"
+  - "내장 함수 라이브러리"
+  - "셀/시트 모델"
+  - "테스트"
+evaluation_criteria:
+  completeness: "수식 파싱 + 의존성 추적 + 증분 재계산 + 내장 함수"
+  quality: "DAG 기반 설계, 순환 감지, 모듈 분리"
+  correctness: "5개 시나리오 모두 통과, 타입 안전성"
+  efficiency: "증분 재계산 (변경된 셀의 의존만 재평가)"

@@ -1,0 +1,35 @@
+{
+  "case_id": "012",
+  "title": "리액티브 스프레드시트 엔진",
+  "baseline": {
+    "total": 49,
+    "dimensions": {
+      "feature_completeness": { "score": 7, "rationale": "기본 수식 파싱(산술 연산, 셀 참조) 가능. SUM, AVERAGE, COUNT 등 기본 함수 구현. 그러나 DAG 기반 의존성 추적 미구현으로 증분 재계산 부재(전체 재계산 의존). 순환 감지 없음. VLOOKUP 누락 가능. IF 중첩 불완전 가능." },
+      "test_coverage": { "score": 2, "rationale": "테스트 부재 또는 수동 검증 의존. 수식 파서 단위 테스트 없음. 순환 감지, 증분 재계산, VLOOKUP 테스트 없음. 앵커드 루브릭에 의해 최대 3점." },
+      "code_quality": { "score": 5, "rationale": "파서, 평가기, 시트 로직이 1-2파일에 혼재. 수식 파싱에 정규식 또는 간이 파서 사용으로 확장성 저하. 함수 등록이 하드코딩." },
+      "error_handling": { "score": 5, "rationale": "기본적인 구문 오류 감지 가능. 그러나 순환 참조 시 무한 루프 위험. 타입 불일치(숫자 함수에 문자열 입력) 미처리. 범위 오류 미검증." },
+      "efficiency": { "score": 4, "rationale": "DAG 미구현으로 셀 변경 시 전체 시트 재계산. O(n^2) 이상의 비효율. 대규모 시트에서 성능 심각 저하." },
+      "correctness": { "score": 6, "rationale": "기본 산술 수식, SUM/AVERAGE 정확 동작. 시나리오 1(기본 체이닝) 동작 가능. 그러나 시나리오 3(순환 감지) 실패, 시나리오 5(VLOOKUP) 미구현 가능." },
+      "architecture": { "score": 4, "rationale": "FormulaParser, DependencyGraph, Evaluator, Sheet 분리 미흡. 단일-2파일 모놀리식. 앵커드 루브릭에 의해 최대 4점." },
+      "extensibility": { "score": 5, "rationale": "새 함수 추가 시 파서와 평가기 동시 수정 필요. 연산자 우선순위 하드코딩으로 새 연산자 추가 어려움." },
+      "documentation": { "score": 5, "rationale": "기본 사용법 주석 가능. 수식 문법 스펙, AST 구조, 의존성 그래프 설명 부재." },
+      "dev_environment": { "score": 6, "rationale": "package.json 존재하나 테스트/lint 스크립트 미비. 기본 실행만 가능." }
+    }
+  },
+  "harness": {
+    "total": 83,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "formula-functions.md 참조로 SUM, AVERAGE, COUNT, MIN, MAX, IF, VLOOKUP, CONCATENATE, ABS, ROUND, LEN, UPPER, LOWER, LEFT, RIGHT, MID 전체 구현. dependency-graph.md로 DAG + 위상 정렬 + 순환 감지 완비. Pratt 파서로 정확한 우선순위 처리. 5개 시나리오 전부 동작." },
+      "test_coverage": { "score": 8, "rationale": "수식 파서 단위 테스트(모든 연산자, 함수, 셀 참조, 범위). 의존성 그래프 테스트(의존 추적, 위상 정렬, 순환 감지). 증분 재계산 체이닝 테스트. 내장 함수 개별 테스트. 에지 케이스(빈 셀, 타입 불일치) 테스트." },
+      "code_quality": { "score": 8, "rationale": "parser, graph, engine 에이전트별 명확한 모듈 분리. Pratt 파서 패턴으로 깔끔한 구문 분석. 함수 레지스트리 패턴으로 내장 함수 관리. 일관된 코딩 스타일." },
+      "error_handling": { "score": 8, "rationale": "순환 참조 감지 시 #CIRCULAR! 에러 반환. 타입 불일치 시 #VALUE! 에러. 범위 오류 시 #REF! 에러. 0 나누기 #DIV/0! 처리. 각 에러 유형별 체계적 분류." },
+      "efficiency": { "score": 8, "rationale": "DAG 기반 증분 재계산으로 변경된 셀의 의존만 재평가. 위상 정렬로 최적 평가 순서 보장. 캐싱 적용으로 중복 평가 방지." },
+      "correctness": { "score": 9, "rationale": "5개 시나리오 모두 정확 동작. Pratt 파서로 연산자 우선순위 정확. VLOOKUP 정확 구현. 순환 감지 완전. 증분 재계산 체이닝 정확." },
+      "architecture": { "score": 9, "rationale": "FormulaParser(parser), DependencyGraph(graph), FormulaEvaluator(engine), Cell, Sheet 완전 분리. AST 노드 타입 체계. 함수 레지스트리 독립 모듈. CLAUDE.md 구조 가이드 활용." },
+      "extensibility": { "score": 9, "rationale": "함수 레지스트리에 새 함수 등록만으로 확장. Pratt 파서 우선순위 테이블에 새 연산자 추가 용이. 셀 포맷터, 차트 연동 등 확장점 제공." },
+      "documentation": { "score": 7, "rationale": "수식 문법 스펙, AST 노드 타입, 의존성 그래프 동작 원리 문서화. 내장 함수 목록 및 사용법. 다만 일부 내부 API 문서 미흡." },
+      "dev_environment": { "score": 8, "rationale": "package.json에 start/test/lint 스크립트 포함. 테스트 러너 구성. 의존성 관리 적절." }
+    }
+  },
+  "delta": 34
+}

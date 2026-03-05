@@ -1,0 +1,200 @@
+id: case-014
+category: complex-system
+title: "이벤트 소싱 CQRS 프레임워크"
+difficulty: expert
+description: |
+  이벤트 소싱(Event Sourcing)과 CQRS(Command Query Responsibility Segregation) 패턴을
+  구현하는 프레임워크를 만들고, 이를 사용하여 은행 계좌 도메인을 구현하세요.
+
+  ## 핵심 개념
+
+  ### Event Sourcing
+  - 상태를 직접 저장하지 않고 **이벤트 스트림**으로 저장
+  - 현재 상태 = 이벤트 순차 적용 (fold/reduce)
+  - 이벤트는 불변(immutable), 추가 전용(append-only)
+
+  ### CQRS
+  - **Command** (쓰기): 이벤트 생성 → 이벤트 스토어에 저장
+  - **Query** (읽기): 프로젝션(읽기 모델)에서 조회
+  - 쓰기와 읽기 모델 완전 분리
+
+  ## 구현 요구사항
+
+  ### 1. EventStore
+  ```javascript
+  class EventStore {
+    append(streamId, events, expectedVersion)  // 낙관적 동시성
+    getStream(streamId)                        // 스트림의 모든 이벤트
+    getStreamFrom(streamId, fromVersion)       // 특정 버전 이후
+    getAllEvents()                              // 전체 이벤트 (프로젝션용)
+    subscribe(handler)                         // 이벤트 구독
+  }
+  ```
+
+  ### 2. Aggregate (도메인 모델)
+  ```javascript
+  class AggregateRoot {
+    constructor(id)
+    loadFromHistory(events)     // 이벤트 재생으로 상태 복원
+    apply(event)                // 이벤트 적용 (상태 변경)
+    getUncommittedEvents()      // 미저장 이벤트
+    get version()               // 현재 버전
+  }
+  ```
+
+  ### 3. Command Bus
+  ```javascript
+  class CommandBus {
+    register(commandType, handler)   // 커맨드 핸들러 등록
+    dispatch(command)                // 커맨드 실행
+  }
+  ```
+
+  ### 4. Projection (읽기 모델)
+  ```javascript
+  class Projection {
+    handle(event)               // 이벤트를 읽기 모델에 반영
+    rebuild(eventStore)         // 전체 이벤트에서 읽기 모델 재구축
+  }
+  ```
+
+  ### 5. Snapshot
+  ```javascript
+  class SnapshotStore {
+    save(aggregateId, version, state)
+    get(aggregateId)           // 최신 스냅샷
+  }
+  // 스냅샷 + 이후 이벤트로 빠른 복원
+  ```
+
+  ### 6. Saga (프로세스 매니저)
+  ```javascript
+  class Saga {
+    handle(event)              // 이벤트에 반응하여 커맨드 발행
+    getState()                 // Saga 현재 상태
+    // 보상 트랜잭션 지원
+  }
+  ```
+
+  ## 은행 계좌 도메인 (구현 예시)
+
+  ### 이벤트
+  ```javascript
+  AccountCreated   { accountId, ownerName, initialBalance }
+  MoneyDeposited   { accountId, amount, balance }
+  MoneyWithdrawn   { accountId, amount, balance }
+  TransferInitiated { fromAccountId, toAccountId, amount, transferId }
+  TransferCompleted { transferId }
+  TransferFailed    { transferId, reason }
+  AccountFrozen    { accountId, reason }
+  AccountUnfrozen  { accountId }
+  ```
+
+  ### 커맨드
+  ```javascript
+  CreateAccount    { accountId, ownerName, initialBalance }
+  Deposit          { accountId, amount }
+  Withdraw         { accountId, amount }
+  TransferMoney    { fromAccountId, toAccountId, amount }
+  FreezeAccount    { accountId, reason }
+  UnfreezeAccount  { accountId }
+  ```
+
+  ### 읽기 모델 (프로젝션)
+  ```javascript
+  // 계좌 잔액 뷰
+  AccountBalanceView { accountId, ownerName, balance, status }
+
+  // 거래 내역 뷰
+  TransactionHistoryView { accountId, transactions: [...] }
+
+  // 이체 상태 뷰
+  TransferStatusView { transferId, status, fromAccount, toAccount, amount }
+  ```
+
+  ### 이체 Saga
+  ```javascript
+  class TransferSaga {
+    // 1. TransferInitiated -> Withdraw(from) 커맨드
+    // 2. MoneyWithdrawn -> Deposit(to) 커맨드
+    // 3. MoneyDeposited -> TransferCompleted 이벤트
+    // 실패 시: 보상 트랜잭션 (출금 취소)
+  }
+  ```
+
+  ## 핵심 시나리오
+
+  ### 시나리오 1: 기본 CRUD
+  ```
+  CreateAccount('acc1', 'Alice', 1000)
+  Deposit('acc1', 500)       -> 잔액 1500
+  Withdraw('acc1', 200)      -> 잔액 1300
+  조회: AccountBalanceView('acc1') -> { balance: 1300 }
+  ```
+
+  ### 시나리오 2: 이벤트 재생 & 상태 복원
+  ```
+  이벤트 스토어에서 acc1 스트림 로드
+  순서대로 재생 -> 현재 잔액 1300 복원
+  ```
+
+  ### 시나리오 3: 계좌 이체 (Saga)
+  ```
+  TransferMoney('acc1', 'acc2', 500)
+  -> TransferSaga 시작
+  -> acc1에서 500 출금 -> acc2에 500 입금
+  -> TransferCompleted
+  acc1: 800, acc2: 500
+  ```
+
+  ### 시나리오 4: 이체 실패 & 보상
+  ```
+  TransferMoney('acc1', 'frozen_acc', 300)
+  -> acc1에서 300 출금 성공
+  -> frozen_acc 입금 실패 (동결 계좌)
+  -> 보상: acc1에 300 환불
+  -> TransferFailed
+  acc1: 잔액 변동 없음
+  ```
+
+  ### 시나리오 5: 낙관적 동시성
+  ```
+  두 커맨드가 동시에 같은 계좌에 출금 시도
+  -> 첫 번째 성공, 두 번째 ConcurrencyError
+  -> 재시도 가능
+  ```
+
+  ### 시나리오 6: 프로젝션 재구축
+  ```
+  프로젝션 삭제 -> rebuild() -> 전체 이벤트 재생 -> 동일 읽기 모델 복원
+  ```
+
+  ### 시나리오 7: 스냅샷
+  ```
+  이벤트 100개 후 스냅샷 저장
+  다음 로드 시: 스냅샷 + 이후 이벤트만 재생
+  결과 동일
+  ```
+
+  ## 테스트 요구사항
+  - EventStore: append, getStream, 낙관적 동시성
+  - Aggregate: 이벤트 재생, 상태 변경, 미저장 이벤트
+  - CommandBus: 등록, 디스패치, 에러 처리
+  - Projection: 이벤트 핸들링, 재구축
+  - Saga: 정상 흐름, 실패 보상
+  - Snapshot: 저장/복원, 스냅샷 후 이벤트 재생
+
+expected_outputs:
+  - "EventStore"
+  - "Aggregate"
+  - "CommandBus"
+  - "Projection"
+  - "Saga"
+  - "Snapshot"
+  - "은행 도메인 구현"
+  - "테스트"
+evaluation_criteria:
+  completeness: "ES/CQRS 프레임워크 + 은행 도메인 + Saga + 스냅샷"
+  quality: "이벤트 불변성, 관심사 분리, 프레임워크 vs 도메인 분리"
+  correctness: "7개 시나리오 모두 통과, 보상 트랜잭션 정확"
+  efficiency: "스냅샷으로 복원 최적화, 증분 프로젝션"

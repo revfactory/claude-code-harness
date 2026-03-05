@@ -1,0 +1,35 @@
+{
+  "case_id": "014",
+  "title": "이벤트 소싱 CQRS 프레임워크",
+  "baseline": {
+    "total": 44,
+    "dimensions": {
+      "feature_completeness": { "score": 5, "rationale": "EventStore 기본 append/getStream 구현. Aggregate 기초적 이벤트 재생 가능. 그러나 Saga 보상 트랜잭션 미구현, Snapshot 누락, 낙관적 동시성 미구현. 7개 시나리오 중 3-4개만 통과" },
+      "test_coverage": { "score": 2, "rationale": "테스트 없거나 기본 시나리오 1개 수동 테스트 수준. EventStore, Aggregate, Saga 각각에 대한 단위 테스트 부재. 앵커 룰: 테스트 없음 시 최대 3점" },
+      "code_quality": { "score": 5, "rationale": "이벤트 타입이 문자열 상수로 산재. 프레임워크와 도메인 로직이 혼재. 이벤트 핸들러가 하드코딩된 if-else 체인" },
+      "error_handling": { "score": 4, "rationale": "잔액 부족 시 기본 에러 throw 정도. 동시성 충돌 미감지, 이벤트 버전 불일치 무시, Saga 실패 시 무한 루프 가능" },
+      "efficiency": { "score": 5, "rationale": "매번 전체 이벤트 스트림 재생으로 상태 복원. 스냅샷 없어 이벤트 수 증가 시 성능 저하. 프로젝션 전체 재구축만 가능" },
+      "correctness": { "score": 5, "rationale": "시나리오 1(기본 CRUD), 2(이벤트 재생) 통과. 시나리오 3(이체 Saga) 부분 동작. 시나리오 4(보상 트랜잭션), 5(동시성), 7(스냅샷) 실패" },
+      "architecture": { "score": 3, "rationale": "프레임워크와 도메인이 분리되지 않음. EventStore/Aggregate/CommandBus가 단일 또는 2파일에 혼재. 읽기/쓰기 모델 분리 미흡. 앵커 룰: 단일 파일 모놀리식 시 최대 4점" },
+      "extensibility": { "score": 4, "rationale": "새 이벤트 타입 추가 시 여러 곳의 switch/if문 수정 필요. 프로젝션 추가 구조 없음. 도메인 교체 불가능한 결합도" },
+      "documentation": { "score": 5, "rationale": "기본 사용법 주석 정도. ES/CQRS 패턴 설명 부재. 이벤트 스키마 문서화 없음" },
+      "dev_environment": { "score": 5, "rationale": "package.json 존재하나 테스트 프레임워크 미설정. 린트/빌드 스크립트 없음" }
+    }
+  },
+  "harness": {
+    "total": 82,
+    "dimensions": {
+      "feature_completeness": { "score": 9, "rationale": "EventStore(append-only, 낙관적 동시성, 구독), Aggregate(이벤트 재생, 버전 관리), CommandBus, Projection(3개 읽기 모델), Saga(이체 + 보상 트랜잭션), Snapshot 모두 구현. 7개 시나리오 전체 통과" },
+      "test_coverage": { "score": 8, "rationale": "EventStore append/getStream/동시성, Aggregate 이벤트 재생/상태 변경, CommandBus 등록/디스패치, Projection 핸들링/재구축, Saga 정상/실패 보상, Snapshot 저장/복원 각각 단위 테스트. 7개 시나리오 통합 테스트" },
+      "code_quality": { "score": 8, "rationale": "이벤트 타입을 불변 객체로 정의. Aggregate 베이스 클래스의 apply 패턴 일관적. 이벤트 핸들러 등록 패턴으로 깔끔한 디스패치. 프레임워크 코드와 도메인 코드 스타일 일관" },
+      "error_handling": { "score": 8, "rationale": "ConcurrencyError(버전 충돌), InsufficientFundsError(잔액 부족), AccountFrozenError(동결 계좌), InvalidCommandError(잘못된 커맨드) 등 도메인 특화 에러 클래스. Saga 실패 시 보상 트랜잭션으로 일관성 보장" },
+      "efficiency": { "score": 8, "rationale": "Snapshot으로 이벤트 재생 최적화. 증분 프로젝션(새 이벤트만 처리). 이벤트 스트림 fromVersion으로 부분 로드. 구독 기반 비동기 프로젝션 업데이트" },
+      "correctness": { "score": 8, "rationale": "7개 시나리오 모두 정확한 결과. 보상 트랜잭션으로 이체 실패 시 잔액 복원. 동시성 충돌 감지 및 재시도. 프로젝션 재구축 결과 동일성 검증. 스냅샷 + 이후 이벤트 재생 정확" },
+      "architecture": { "score": 9, "rationale": "framework(EventStore, AggregateRoot, CommandBus, Projection, Saga, Snapshot) / domain(BankAccount, 이벤트, 커맨드 핸들러) / projections(잔액뷰, 거래내역뷰, 이체상태뷰) 3계층 완전 분리. 프레임워크 재사용 가능" },
+      "extensibility": { "score": 8, "rationale": "새 Aggregate 타입 추가 시 AggregateRoot 상속만으로 가능. 프로젝션 추가는 Projection 인터페이스 구현. 새 Saga 정의 용이. 이벤트 미들웨어 체인 지원" },
+      "documentation": { "score": 7, "rationale": "ES/CQRS 패턴 참조 문서, Aggregate 패턴 상세 설명, Saga 보상 패턴 문서. 이벤트 스키마 정의. 코드 내 JSDoc 주석" },
+      "dev_environment": { "score": 9, "rationale": "package.json에 test/lint 스크립트 완비. Jest 테스트 프레임워크. ESLint 설정. 시나리오별 실행 스크립트. 디렉토리 구조 체계적" }
+    }
+  },
+  "delta": 38
+}

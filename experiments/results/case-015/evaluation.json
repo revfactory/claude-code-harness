@@ -1,0 +1,35 @@
+{
+  "case_id": "015",
+  "title": "Language Server Protocol 구현",
+  "baseline": {
+    "total": 40,
+    "dimensions": {
+      "feature_completeness": { "score": 4, "rationale": "JSON-RPC 기본 파싱/전송 구현. 파서는 있으나 에러 복구 없음(에러 시 파싱 중단). 자동완성은 키워드 목록 정도. 진단은 문법 에러만 기초적 감지. Go-to-Definition/호버 미구현 또는 스텁 수준. 증분 파싱 미구현" },
+      "test_coverage": { "score": 2, "rationale": "테스트 없거나 JSON-RPC 파싱 1-2개 테스트 수준. LSP 프로토콜 시나리오 테스트 부재. 앵커 룰: 테스트 없음 시 최대 3점" },
+      "code_quality": { "score": 4, "rationale": "LSP 메시지 핸들러가 거대한 switch문. 파서/분석/제공자 로직이 혼재. 하드코딩된 키워드 목록. 일관성 없는 에러 응답 형식" },
+      "error_handling": { "score": 3, "rationale": "JSON-RPC 파싱 에러 시 크래시 가능. 잘못된 LSP 메시지에 대한 방어 부족. 파서 에러 복구 없어 하나의 문법 에러가 전체 파싱 실패 유발" },
+      "efficiency": { "score": 4, "rationale": "매 변경마다 전체 재파싱. 심볼 테이블 매번 재구축. 대형 파일에서 심각한 성능 저하. 증분 업데이트 미지원" },
+      "correctness": { "score": 4, "rationale": "시나리오 1(진단) 부분 동작(문법 에러만). 시나리오 2(자동완성) 키워드만 동작. 시나리오 3(Go-to-Definition), 4(호버) 미동작. 시나리오 5(증분 업데이트) 미구현" },
+      "architecture": { "score": 3, "rationale": "단일 또는 2파일에 전송/파서/분석/제공자가 혼재. LSP 프로토콜 핸들링과 언어 분석이 분리되지 않음. 앵커 룰: 단일 파일 모놀리식 시 최대 4점" },
+      "extensibility": { "score": 4, "rationale": "새 LSP 기능 추가 시 거대한 핸들러 함수 수정 필요. 새 진단 규칙이나 자동완성 소스 추가 구조 없음. 다른 언어로 교체 불가" },
+      "documentation": { "score": 5, "rationale": "기본 주석 수준. LSP 프로토콜 메시지 형식 설명 없음. 지원 기능 목록 문서화 없음" },
+      "dev_environment": { "score": 5, "rationale": "package.json 존재하나 test 스크립트 미설정. LSP 서버 실행 스크립트 기본적. VS Code 확장 연동 미설정" }
+    }
+  },
+  "harness": {
+    "total": 79,
+    "dimensions": {
+      "feature_completeness": { "score": 8, "rationale": "JSON-RPC 전송(Content-Length 파싱/생성), 증분 파서(에러 복구 포함), 심볼 테이블(스코프 기반), 진단(문법 에러 + 미정의 변수 + 인수 불일치 + 미사용 변수), 자동완성(키워드 + 변수 + 함수 + 스니펫), Go-to-Definition, 호버 모두 구현. 5개 시나리오 통과" },
+      "test_coverage": { "score": 8, "rationale": "JSON-RPC 파싱/생성 테스트, 파서 전체/증분/에러복구 테스트, 심볼 테이블 정의/해석/스코프 테스트, 진단 규칙별 테스트, 자동완성/정의이동/호버 시나리오 테스트, LSP 프로토콜 initialize/didOpen/didChange/completion/definition/hover 통합 테스트" },
+      "code_quality": { "score": 8, "rationale": "LSP 메시지 타입별 핸들러 분리. 파서의 에러 복구 전략(synchronize, panic mode) 체계적 구현. Provider 패턴으로 각 LSP 기능 캡슐화. 일관된 응답 형식" },
+      "error_handling": { "score": 8, "rationale": "JSON-RPC 레벨 에러 코드 준수(-32700 파싱 에러, -32601 메서드 미존재 등). 파서 에러 복구로 부분 AST 생성. 잘못된 위치/문서 요청 시 graceful 처리. 전송 레이어 연결 끊김 감지" },
+      "efficiency": { "score": 7, "rationale": "증분 파싱으로 변경 영역만 재분석. 심볼 테이블 캐싱. 문서별 AST 캐시 유지. 다만 최적화 여지는 있음(tree-sitter 수준은 아님)" },
+      "correctness": { "score": 8, "rationale": "5개 시나리오 모두 정확한 결과. 진단: 미정의 변수 y 감지, 인수 불일치 감지. 자동완성: 접두사 기반 필터링 정확. Go-to-Definition: 정의 위치 정확 반환. 호버: 함수 시그니처 정확 표시. 증분 업데이트 후 진단 갱신" },
+      "architecture": { "score": 9, "rationale": "server(LSP 프로토콜 핸들링) / parser(증분 파서 + 에러 복구) / analysis(심볼 테이블 + 스코프) / providers(진단, 자동완성, 정의이동, 호버) / document(문서 관리 + 변경 추적) 5계층 완전 분리. 새 언어 지원 시 파서만 교체 가능" },
+      "extensibility": { "score": 8, "rationale": "새 LSP 기능(rename, references, formatting 등) Provider 인터페이스 구현만으로 추가. 진단 규칙 플러그인 구조. 자동완성 소스 등록 가능. 언어별 파서 교체 가능 구조" },
+      "documentation": { "score": 7, "rationale": "LSP 프로토콜 메시지 형식 참조 문서, 에러 복구 파싱 전략 문서, 지원 기능 목록. 코드 내 JSDoc 주석. 설정 방법 안내" },
+      "dev_environment": { "score": 9, "rationale": "package.json에 test/lint/start 스크립트 완비. Jest 테스트 프레임워크. ESLint 설정. LSP 서버 실행 + 테스트 클라이언트 스크립트. 디버그 로깅 지원" }
+    }
+  },
+  "delta": 39
+}

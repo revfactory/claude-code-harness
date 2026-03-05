@@ -1,0 +1,196 @@
+id: case-015
+category: complex-system
+title: "Language Server Protocol 구현"
+difficulty: expert
+description: |
+  MiniLang 언어를 위한 LSP(Language Server Protocol) 서버를 구현하세요.
+  증분 파싱, 자동완성, 진단(에러 감지), Go-to-Definition, 호버 정보를 제공합니다.
+
+  ## LSP 개요
+
+  ### JSON-RPC 전송
+  ```
+  Content-Length: 52\r\n
+  \r\n
+  {"jsonrpc":"2.0","method":"initialize","id":1,"params":{...}}
+  ```
+
+  ### 생명주기
+  ```
+  Client → initialize → Server
+  Client → initialized → Server
+  Client → textDocument/didOpen → Server
+  Client → textDocument/didChange → Server
+  Server → textDocument/publishDiagnostics → Client
+  Client → textDocument/completion → Server ← response
+  Client → textDocument/definition → Server ← response
+  Client → textDocument/hover → Server ← response
+  Client → shutdown → Server
+  Client → exit → Server
+  ```
+
+  ## MiniLang 언어 (Case-007 기반)
+
+  ### 문법
+  ```
+  let x = 10;
+  fn add(a, b) { return a + b; }
+  if (x > 5) { print("big"); }
+  while (i < 10) { i = i + 1; }
+  for (let i = 0; i < 5; i = i + 1) { print(i); }
+  ```
+
+  ## 구현 요구사항
+
+  ### 1. JSON-RPC Transport
+  ```javascript
+  class JsonRpcTransport {
+    constructor(input, output)    // stdin/stdout 스트림
+    onMessage(handler)            // 메시지 수신 콜백
+    send(message)                 // 메시지 전송
+    // Content-Length 헤더 파싱/생성
+  }
+  ```
+
+  ### 2. Incremental Parser
+  ```javascript
+  class IncrementalParser {
+    parse(text)                   // 전체 파싱 → AST + 에러 목록
+    update(changes, oldTree)      // 증분 업데이트
+    getSymbols(ast)               // 심볼 테이블 추출
+    getScope(position, ast)       // 특정 위치의 스코프
+  }
+  ```
+
+  ### 3. Symbol Table
+  ```javascript
+  class SymbolTable {
+    define(name, kind, location, type)  // 심볼 등록
+    resolve(name, scope)                // 이름 해석
+    getCompletions(scope)               // 스코프 내 사용 가능한 심볼
+    findDefinition(name, position)      // 정의 위치 찾기
+    findReferences(name)                // 모든 참조 위치
+  }
+  ```
+
+  ### 4. Diagnostic Provider
+  ```javascript
+  class DiagnosticProvider {
+    analyze(ast, symbolTable)     // 진단 목록 생성
+    // 문법 에러 (파서에서)
+    // 미정의 변수 참조
+    // 타입 불일치 (기본적)
+    // 사용하지 않는 변수
+    // 함수 인수 개수 불일치
+  }
+  ```
+
+  ### 5. Completion Provider
+  ```javascript
+  class CompletionProvider {
+    getCompletions(position, ast, symbolTable)
+    // 키워드: let, fn, if, else, while, for, return, true, false, null
+    // 변수: 스코프 내 정의된 변수
+    // 함수: 정의된 함수 + 내장 함수
+    // 스니펫: if(){}, fn name(){}, for(){}
+  }
+  ```
+
+  ### 6. Hover Provider
+  ```javascript
+  class HoverProvider {
+    getHoverInfo(position, ast, symbolTable)
+    // 변수: 타입, 정의 위치
+    // 함수: 시그니처, 파라미터, 설명
+    // 키워드: 설명
+  }
+  ```
+
+  ### 7. Definition Provider
+  ```javascript
+  class DefinitionProvider {
+    getDefinition(position, ast, symbolTable)
+    // 변수 → 선언 위치
+    // 함수 호출 → 함수 정의 위치
+  }
+  ```
+
+  ## 핵심 시나리오
+
+  ### 시나리오 1: 진단 (실시간 에러 감지)
+  ```
+  입력:
+    let x = 10;
+    print(y);      ← 미정의 변수 'y'
+    fn add(a, b) { return a + b; }
+    add(1);        ← 인수 부족 (expected 2, got 1)
+
+  기대 진단:
+    line 2: 'y' is not defined
+    line 4: 'add' expects 2 arguments, got 1
+  ```
+
+  ### 시나리오 2: 자동완성
+  ```
+  입력:
+    let userName = "Alice";
+    let userAge = 30;
+    user|  ← 커서 위치
+
+  기대 완성:
+    userName (variable)
+    userAge (variable)
+  ```
+
+  ### 시나리오 3: Go-to-Definition
+  ```
+  입력:
+    fn greet(name) {
+      print("Hello " & name);
+    }
+    greet("World");  ← greet에서 Go-to-Definition
+
+  기대: line 1, column 3 (fn greet 정의 위치)
+  ```
+
+  ### 시나리오 4: 호버
+  ```
+  입력:
+    fn add(a, b) { return a + b; }
+    add(3, 4);  ← add 위에 호버
+
+  기대: fn add(a, b) — 2 parameters
+  ```
+
+  ### 시나리오 5: 증분 업데이트
+  ```
+  파일이 열린 상태에서 한 줄 수정
+  → 전체 재파싱이 아닌 증분 업데이트
+  → 변경된 영역만 재분석
+  → 진단 즉시 갱신
+  ```
+
+  ## 테스트 요구사항
+  - JSON-RPC: 메시지 파싱/생성, Content-Length
+  - 파서: 전체/증분 파싱, 에러 복구
+  - 심볼 테이블: 정의/해석, 스코프
+  - 진단: 문법 에러, 미정의 변수, 인수 불일치
+  - 자동완성: 키워드, 변수, 함수, 스니펫
+  - Go-to-Definition: 변수, 함수
+  - 호버: 변수, 함수, 키워드
+  - LSP 프로토콜: initialize, didOpen, didChange, completion, definition, hover
+
+expected_outputs:
+  - "JSON-RPC 전송 레이어"
+  - "증분 파서"
+  - "심볼 테이블"
+  - "진단 제공자"
+  - "자동완성"
+  - "Go-to-Definition"
+  - "호버"
+  - "테스트"
+evaluation_criteria:
+  completeness: "LSP 프로토콜 + 진단 + 자동완성 + 정의 이동 + 호버"
+  quality: "LSP 스펙 준수, 증분 파싱, 모듈 분리"
+  correctness: "5개 시나리오 모두 통과, 에러 복구 파싱"
+  efficiency: "증분 업데이트, 불필요한 재파싱 방지"

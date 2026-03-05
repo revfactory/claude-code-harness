@@ -1,0 +1,210 @@
+id: case-013
+category: complex-system
+title: "가상 머신 & 바이트코드 컴파일러"
+difficulty: expert
+description: |
+  MiniLang 소스 코드를 바이트코드로 컴파일하고, 스택 기반 가상 머신에서 실행하는
+  컴파일러 + VM 시스템을 구현하세요.
+
+  ## MiniLang 언어 스펙 (Case-007 확장)
+
+  ### 데이터 타입
+  - 정수 (42, -7), 실수 (3.14), 문자열 ("hello")
+  - 불리언 (true, false), 배열 ([1,2,3]), null
+
+  ### 변수, 연산, 제어 흐름
+  ```
+  let x = 10;
+  x = x + 1;
+  if (x > 5) { print("big"); } else { print("small"); }
+  while (i < 10) { i = i + 1; }
+  for (let i = 0; i < 5; i = i + 1) { print(i); }
+  ```
+
+  ### 함수 & 클로저
+  ```
+  fn add(a, b) { return a + b; }
+  fn makeCounter() {
+    let count = 0;
+    fn inc() { count = count + 1; return count; }
+    return inc;
+  }
+  ```
+
+  ## 바이트코드 명세
+
+  ### 명령어 세트
+  ```
+  // 스택 조작
+  OP_CONST idx        - 상수 풀에서 값 push
+  OP_POP              - 스택 top 제거
+  OP_DUP              - 스택 top 복제
+
+  // 산술
+  OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_MOD
+  OP_NEG              - 단항 부정
+
+  // 비교
+  OP_EQ, OP_NEQ, OP_LT, OP_GT, OP_LTE, OP_GTE
+
+  // 논리
+  OP_NOT, OP_AND, OP_OR
+
+  // 변수
+  OP_GET_LOCAL idx    - 로컬 변수 읽기
+  OP_SET_LOCAL idx    - 로컬 변수 쓰기
+  OP_GET_GLOBAL name  - 전역 변수 읽기
+  OP_SET_GLOBAL name  - 전역 변수 쓰기
+  OP_GET_UPVALUE idx  - 클로저 변수 읽기
+  OP_SET_UPVALUE idx  - 클로저 변수 쓰기
+
+  // 제어 흐름
+  OP_JUMP offset      - 무조건 점프
+  OP_JUMP_IF_FALSE offset - 조건부 점프
+  OP_LOOP offset      - 역방향 점프 (루프)
+
+  // 함수
+  OP_CLOSURE idx      - 클로저 생성
+  OP_CALL argc        - 함수 호출
+  OP_RETURN           - 함수 반환
+
+  // 배열
+  OP_ARRAY count      - 배열 생성
+  OP_INDEX            - 배열 인덱스 접근
+  OP_INDEX_SET        - 배열 인덱스 설정
+
+  // 내장
+  OP_PRINT            - 출력
+  OP_LEN              - 길이
+  OP_PUSH             - 배열 push
+
+  // 기타
+  OP_NULL             - null push
+  OP_TRUE, OP_FALSE   - boolean push
+  OP_HALT             - 실행 중단
+  ```
+
+  ## 구현 요구사항
+
+  ### 1. Compiler (AST → Bytecode)
+  ```javascript
+  class Compiler {
+    compile(ast)          // AST → Chunk (바이트코드 + 상수 풀)
+    compileFunction(node) // 함수 노드 → FunctionObject
+  }
+
+  class Chunk {
+    code: number[]        // 바이트코드 배열
+    constants: Value[]    // 상수 풀
+    lines: number[]       // 디버그: 각 바이트코드의 소스 행 번호
+  }
+  ```
+
+  ### 2. VM (Bytecode Executor)
+  ```javascript
+  class VM {
+    interpret(chunk)      // 바이트코드 실행
+
+    // 내부
+    stack: Value[]        // 연산 스택
+    callFrames: Frame[]   // 호출 스택
+    globals: Map          // 전역 변수
+
+    run()                 // 메인 실행 루프 (fetch-decode-execute)
+  }
+
+  class CallFrame {
+    closure: Closure      // 실행 중인 클로저
+    ip: number           // 명령 포인터
+    slotOffset: number   // 스택에서 이 프레임의 시작 위치
+  }
+  ```
+
+  ### 3. Disassembler (디버깅)
+  ```javascript
+  class Disassembler {
+    disassemble(chunk, name)   // 사람이 읽을 수 있는 바이트코드 출력
+    disassembleInstruction(chunk, offset) // 단일 명령어 출력
+  }
+  ```
+
+  ## 핵심 시나리오
+
+  ### 시나리오 1: 산술 & 변수
+  ```
+  let x = (10 + 3) * 2 - 1;   // x = 25
+  print(x);
+
+  // 컴파일 결과:
+  // OP_CONST 10
+  // OP_CONST 3
+  // OP_ADD
+  // OP_CONST 2
+  // OP_MUL
+  // OP_CONST 1
+  // OP_SUB
+  // OP_SET_LOCAL 0
+  // OP_GET_LOCAL 0
+  // OP_PRINT
+  ```
+
+  ### 시나리오 2: 제어 흐름
+  ```
+  let sum = 0;
+  for (let i = 1; i <= 100; i = i + 1) {
+    sum = sum + i;
+  }
+  print(sum);  // 5050
+  ```
+
+  ### 시나리오 3: 클로저
+  ```
+  fn makeAdder(x) {
+    fn add(y) { return x + y; }
+    return add;
+  }
+  let add5 = makeAdder(5);
+  print(add5(3));   // 8
+  print(add5(10));  // 15
+  ```
+
+  ### 시나리오 4: 재귀 (피보나치)
+  ```
+  fn fib(n) {
+    if (n <= 1) { return n; }
+    return fib(n-1) + fib(n-2);
+  }
+  print(fib(10));  // 55
+  ```
+
+  ### 시나리오 5: 고차 함수
+  ```
+  fn map(arr, f) {
+    let result = [];
+    for (let i = 0; i < len(arr); i = i + 1) {
+      push(result, f(arr[i]));
+    }
+    return result;
+  }
+  let doubled = map([1,2,3,4,5], fn(x) { return x * 2; });
+  print(doubled);  // [2,4,6,8,10]
+  ```
+
+  ## 테스트 요구사항
+  - 컴파일러: 각 구문의 바이트코드 생성 검증
+  - VM: 각 opcode 실행 검증
+  - 통합: 5개 시나리오 실행 결과 검증
+  - 에러: 스택 오버플로, 타입 에러, 미정의 변수
+  - 디셈블러: 바이트코드 텍스트 출력
+
+expected_outputs:
+  - "컴파일러"
+  - "가상 머신"
+  - "디셈블러"
+  - "바이트코드 명세"
+  - "테스트"
+evaluation_criteria:
+  completeness: "전체 언어 컴파일 + VM 실행 + 클로저 + 디버깅"
+  quality: "컴파일러-VM 분리, opcode 설계, 호출 규약"
+  correctness: "5개 시나리오 정확한 결과, 클로저/재귀 동작"
+  efficiency: "직접 dispatch vs switch, 상수 풀 활용"
