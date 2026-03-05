@@ -550,7 +550,7 @@ src/
 <li><strong>Evaluation Subjectivity:</strong> While our anchored rubrics tie scores to observable code properties, quality assessment inherently involves judgment. Different evaluators might weigh edge cases differently within the rubric boundaries.</li>
 <li><strong>Single LLM:</strong> All experiments used Claude Code as the code agent. While we believe the principles generalize&mdash;structural guidance should benefit any LLM&mdash;the magnitude of improvement may vary across different models and agents.</li>
 <li><strong>Simulated Execution:</strong> Our evaluation assesses code structure, logic, and test design through analysis rather than runtime execution. Some correctness issues may only surface during actual execution.</li>
-<li><strong>Harness Creation Cost:</strong> The time and expertise required to create high-quality Harness configurations is not accounted for in our analysis. However, as discussed in &sect;8.3, our automated Harness generation meta-skill substantially reduces this cost by generating configurations from natural language descriptions.</li>
+<li><strong>Harness Creation Cost:</strong> The time and expertise required to create high-quality Harness configurations is not accounted for in our analysis. However, as discussed in &sect;8.2, our automated Harness generation meta-skill substantially reduces this cost by generating configurations from natural language descriptions.</li>
 </ol>
 
 <h3>7.4 Threats to Validity</h3>
@@ -567,21 +567,11 @@ src/
 <li><strong>Provide algorithm references for novel implementations.</strong> Skills with detailed references significantly improve correctness.</li>
 </ol>
 
-<h3>8.2 Future Work</h3>
-<p>Several promising research directions emerge from this work:</p>
-<ol>
-<li><strong>Automated Harness Generation (Implemented):</strong> As described in &sect;8.3, we have already implemented a meta-skill that automatically generates Harness configurations from project requirements.</li>
-<li><strong>Cross-Agent Evaluation:</strong> Testing across GPT-4, Gemini, and other LLM code agents.</li>
-<li><strong>Longitudinal Studies:</strong> Measuring impact on ongoing development rather than greenfield projects.</li>
-<li><strong>Cost-Benefit Analysis:</strong> Quantifying time investment versus quality improvement.</li>
-<li><strong>Formal Quality Metrics:</strong> Integrating automated metrics (cyclomatic complexity, static analysis) alongside human evaluation.</li>
-</ol>
-
-<h3>8.3 Automated Harness Generation: From Future Work to Implementation</h3>
+<h3>8.2 Automated Harness Generation</h3>
 
 <p>One of the most promising directions identified in this research&mdash;automated Harness generation&mdash;has already been realized as a working implementation. We developed a <strong>meta-skill</strong> called &ldquo;Harness&rdquo; that automatically designs and generates complete <code>.claude/</code> configurations from natural language project descriptions. This meta-skill represents a significant step toward making structured pre-configuration accessible without requiring manual configuration effort.</p>
 
-<h4>8.3.1 Meta-Skill Architecture</h4>
+<h4>8.2.1 Meta-Skill Architecture</h4>
 <p>The Harness meta-skill operates through a six-phase workflow:</p>
 <ol>
 <li><strong>Domain Analysis:</strong> Parses the user&rsquo;s project description to identify the domain, core task types (generation, validation, analysis), and existing configurations to avoid conflicts.</li>
@@ -592,13 +582,22 @@ src/
 <li><strong>Verification:</strong> Validates all generated files for correct placement, frontmatter consistency, and cross-reference integrity.</li>
 </ol>
 
-<h4>8.3.2 Design Principles</h4>
+<h4>8.2.2 Design Principles</h4>
 <p>The meta-skill embodies a clear separation between agents (&ldquo;who does it&rdquo;) and skills (&ldquo;how it is done&rdquo;). Agent separation follows four criteria: expertise differentiation, parallel execution capability, context load management, and reusability across teams. Reference documents for specialized domains are isolated in <code>references/</code> directories, following the Progressive Disclosure principle (P2) established in &sect;3.3.</p>
 
-<h4>8.3.3 Practical Impact</h4>
+<h4>8.2.3 Practical Impact</h4>
 <p>This implementation directly addresses the Harness Creation Cost limitation identified in &sect;7.3. Rather than requiring manual configuration by domain experts, the meta-skill enables any developer to generate a production-quality Harness configuration by simply describing their project requirements in natural language. In our experience, the meta-skill produces configurations comparable in quality to manually crafted ones, effectively closing the loop between our experimental findings and practical deployment.</p>
 
 <p>The meta-skill has been validated across diverse domains including software engineering, creative writing, and research workflows, demonstrating that the Harness framework&rsquo;s principles generalize beyond the JavaScript/Node.js focus of our experimental evaluation.</p>
+
+<h3>8.3 Future Work</h3>
+<p>Several promising research directions emerge from this work:</p>
+<ol>
+<li><strong>Cross-Agent Evaluation:</strong> Testing across GPT-4, Gemini, and other LLM code agents.</li>
+<li><strong>Longitudinal Studies:</strong> Measuring impact on ongoing development rather than greenfield projects.</li>
+<li><strong>Cost-Benefit Analysis:</strong> Quantifying time investment versus quality improvement.</li>
+<li><strong>Formal Quality Metrics:</strong> Integrating automated metrics (cyclomatic complexity, static analysis) alongside human evaluation.</li>
+</ol>
 
 <!-- 9. CONCLUSION -->
 <h2>9. Conclusion</h2>
